@@ -1,35 +1,42 @@
-name: .NET Core Desktop
+name: CI
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
-    runs-on: windows-latest
-    env:
-      Solution_Name: MeteoApp/MeteoApp.sln
-      Test_Project_Path: MeteoApp/TestProject/TestProject.csproj
-      Wap_Project_Directory: MeteoApp/MeteoApp
-      Wap_Project_Path: MeteoApp/MeteoApp/MeteoApp.csproj
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: List directory structure
+        run: ls -R  # Debugging - vezi structura folderelor
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4.3.0
         with:
-          fetch-depth: 0
+          dotnet-version: 8.0.x  # Actualizat la .NET 8
 
-      - uses: actions/setup-dotnet@v4
+      - name: Restore dependencies
+        run: dotnet restore Catalog/Catalog.sln
+
+      - name: Build project
+        run: dotnet build Catalog/Catalog.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test Catalog/Catalog.sln --configuration Release --no-restore --verbosity normal
+
+      - name: Publish application
+        run: dotnet publish Catalog/Catalog.sln --configuration Release --no-restore --output Catalog/publish/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          dotnet-version: 8.0.x
-
-      - uses: microsoft/setup-msbuild@v2
-
-      - run: dotnet test ${{ env.Test_Project_Path }}
-
-      - run: msbuild ${{ env.Solution_Name }} /t:Restore /p:Configuration=${{ matrix.configuration }}
-        env:
-          Configuration: ${{ matrix.configuration }}
+          name: published-app
+          path: Catalog/publish/
