@@ -1,0 +1,35 @@
+name: .NET Core Desktop
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    runs-on: windows-latest
+    env:
+      Solution_Name: MeteoApp/MeteoApp.sln
+      Test_Project_Path: MeteoApp/TestProject/TestProject.csproj
+      Wap_Project_Directory: MeteoApp/MeteoApp
+      Wap_Project_Path: MeteoApp/MeteoApp/MeteoApp.csproj
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - run: dotnet test ${{ env.Test_Project_Path }}
+
+      - run: msbuild ${{ env.Solution_Name }} /t:Restore /p:Configuration=${{ matrix.configuration }}
+        env:
+          Configuration: ${{ matrix.configuration }}
