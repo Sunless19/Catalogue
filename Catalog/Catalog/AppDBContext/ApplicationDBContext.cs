@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Catalog.Models;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+
+
 namespace Catalog.AppDBContext
 {
     public class ApplicationDBContext : DbContext
@@ -10,7 +13,11 @@ namespace Catalog.AppDBContext
         public DbSet<Class> Classes { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=CatalogDB;Trusted_Connection=True;");
+            var connectionString = "server=localhost;port=3306;database=MyAppDb;user=myuser;password=mypass";
+
+            optionsBuilder.UseMySql(connectionString,
+                new MySqlServerVersion(new Version(8, 0, 34)));
+
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
