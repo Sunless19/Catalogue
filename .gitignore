@@ -398,3 +398,38 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Compiled output
+/dist/
+/out-tsc/
+/build/
+
+# Node dependencies
+/node_modules/
+
+# Angular build artifacts and temporary files
+/.angular/
+/.angular-cache/
+/.angular/
+
+# Environment files (may contain secrets)
+/src/environments/environment*.ts
+
+# IDE/editor specific
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# VS Code settings (optional, already partially covered)
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+
+# Misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# End Angular ignores
