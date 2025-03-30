@@ -1,1 +1,15 @@
-<p>Welcome to teacher view!</p>
+<div class="full-page-wrapper">
+    <div class="teacher-container">
+      <h2>Your Classes</h2>
+      <ul class="class-list">
+        <li *ngFor="let classItem of classes; let i = index" (click)="toggleClass(i)">
+          <div class="class-header">
+            {{ classItem.name }}
+          </div>
+          <ul *ngIf="classItem.expanded" class="student-list">
+            <li *ngFor="let student of classItem.students">{{ student }}</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
