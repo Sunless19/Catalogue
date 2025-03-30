@@ -15,10 +15,6 @@ public class UserService
         _userRepository = userRepository;
         _jwtKey = configuration["Jwt:Key"];
 
-        if (!_userRepository.GetAll().Any())
-        {
-           
-        }
     }
 
     public bool RegisterUser(User user)

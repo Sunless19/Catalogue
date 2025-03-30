@@ -44,6 +44,11 @@ export class UserService {
     const payload = { username: email, password };
     return this.http.post<string>(`${this.apiUrl}/login`, payload);
   }
+
+  
+  register(payload: any): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/register`, payload);
+  }
   
   resetPassword(email: string): Observable<any> {
     const payload = { email };
