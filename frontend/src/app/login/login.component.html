@@ -4,15 +4,18 @@
   
       <form (ngSubmit)="onLogin()" #loginForm="ngForm">
         <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            [(ngModel)]="email"
-            required
-            placeholder="you@example.com"
-          />
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              [(ngModel)]="username"
+              required
+              placeholder="Enter your username"
+            />
+          </div>
+          
         </div>
   
         <div class="form-group">

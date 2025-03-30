@@ -1,19 +1,32 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UserService } from '../../services/apiService';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-login2',
+  standalone: true,
   templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
   imports: [CommonModule, FormsModule],
-  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  email: string = '';
+  username: string = '';
   password: string = '';
 
+  constructor(private userService: UserService) {}
+
   onLogin() {
-    console.log('Email:', this.email);
+
+    this.userService.login(this.username, this.password).subscribe({
+      next: (token) =>{
+        console.log("LOGGED IN")
+      },
+      error: (err) =>{
+        console.log("error when logged in")
+      }
+    })
+    console.log('Email:', this.username);
     console.log('Password:', this.password);
   }
 }
