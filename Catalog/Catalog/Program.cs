@@ -2,6 +2,8 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Catalog.AppDBContext;
+using Catalog.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,8 +55,9 @@ builder.Services.AddCors(options =>
     );
 });
 
-builder.Services.AddSingleton<UserService>();
-
+builder.Services.AddDbContext<ApplicationDBContext>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<UserService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
