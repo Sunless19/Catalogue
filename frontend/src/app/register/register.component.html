@@ -1,0 +1,32 @@
+<div class="full-page-wrapper">
+    <div class="register-container">
+      <h2>Register</h2>
+      <form (ngSubmit)="onRegister()" #form="ngForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" [(ngModel)]="username" required />
+        </div>
+  
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" [(ngModel)]="email" required />
+        </div>
+  
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" [(ngModel)]="password" required />
+        </div>
+  
+        <div class="form-group">
+          <label for="role">Role</label>
+          <select id="role" name="role" [(ngModel)]="role" required>
+            <option value="Student">Student</option>
+            <option value="Teacher">Teacher</option>
+          </select>
+        </div>
+  
+        <button type="submit" [disabled]="!form.valid">Register</button>
+      </form>
+    </div>
+  </div>
+  
