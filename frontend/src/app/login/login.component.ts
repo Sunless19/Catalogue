@@ -19,8 +19,13 @@ export class LoginComponent {
   onLogin() {
 
     this.userService.login(this.username, this.password).subscribe({
-      next: (token) =>{
-        console.log("LOGGED IN")
+      next: (response: any) =>{
+        const token = response.token;
+        console.log('RESPONSE:', token);
+        localStorage.setItem('token', token);
+        const role = this.userService.getUserRole();
+
+        console.log(`LOGGED IN as ${role}`);
       },
       error: (err) =>{
         console.log("error when logged in")

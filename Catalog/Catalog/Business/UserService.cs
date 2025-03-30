@@ -44,6 +44,23 @@ public class UserService
         }
     }
 
+    public bool RegisterUser(User user)
+    {
+        var existingUserByName = _userRepository.GetByUsername(user.Name!);
+        var existingUserByEmail = _userRepository.GetByEmail(user.EmailAddress!);
+
+        if (existingUserByName != null || existingUserByEmail != null)
+        {
+            return false; 
+        }
+
+        _userRepository.Add(user);
+        _userRepository.Save();
+
+        return true;
+    }
+
+
     public string? Authenticate(string username, string password)
     {
         var user = _userRepository.GetByUsernameAndPassword(username, password);
