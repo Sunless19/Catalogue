@@ -59,6 +59,7 @@ builder.Services.AddDbContext<ApplicationDBContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserService>();
 
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -77,6 +78,14 @@ builder.Services.AddAuthorization();
 
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var userRepostory = services.GetRequiredService<IUserRepository>();
+
+    DbSeeder.SeedInitialUsers(userRepostory);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

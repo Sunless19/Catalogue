@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/apiService';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login2',
@@ -14,7 +15,7 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private router: Router) {}
 
   onLogin() {
 
@@ -24,6 +25,14 @@ export class LoginComponent {
         console.log('RESPONSE:', token);
         localStorage.setItem('token', token);
         const role = this.userService.getUserRole();
+
+        if (role === 'Student') {
+          this.router.navigate(['/student']);
+        } else if (role === 'Teacher') {
+          this.router.navigate(['/teacher']);
+        } else {
+          this.router.navigate(['/error']);
+        }
 
         console.log(`LOGGED IN as ${role}`);
       },
