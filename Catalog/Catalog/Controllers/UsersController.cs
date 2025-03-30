@@ -6,15 +6,20 @@ namespace Catalog.Controllers
     [Route("User")]
     public class UserController : ControllerBase
     {
+        private UserService _userService;
+        public UserController(UserService userService)
+        {
+            _userService = userService;
+        }
+
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            if (request.Username == "admin" && request.Password == "1234")
-            {
-                return Ok(new { Message = "Student" });
-            }
+            var token = _userService.Authenticate(request.Username, request.Password);
+            if (token == null)
+                return Unauthorized(new { Message = "Invalid credentials." });
 
-            return Unauthorized(new { Message = "Invalid credentials." });
+            return Ok(new { Token = token });
         }
     }
 
