@@ -2,12 +2,17 @@
     <div class="teacher-container">
       <h2>Your Classes</h2>
       <ul class="class-list">
-        <li *ngFor="let classItem of classes; let i = index" (click)="toggleClass(i)">
+        <li *ngFor="let classItem of classes; let i = index" (click)="toggleClass(i)" class="class-item">
           <div class="class-header">
             {{ classItem.name }}
+            <button *ngIf="classItem.expanded" class="add-student-btn" (click)="addStudent(i, $event)">
+              +
+            </button>
           </div>
           <ul *ngIf="classItem.expanded" class="student-list">
-            <li *ngFor="let student of classItem.students">{{ student }}</li>
+            <li *ngFor="let student of classItem.students" (click)="$event.stopPropagation()">
+              {{ student }}
+            </li>
           </ul>
         </li>
       </ul>

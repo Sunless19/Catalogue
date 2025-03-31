@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Catalog.AppDBContext;
 using Catalog.Repositories;
+using Catalog.Repository;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +59,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<ApplicationDBContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IClassRepository, ClassRepository>();
+builder.Services.AddScoped<ITeacherRepository, TeacherService>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -84,7 +87,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var userRepostory = services.GetRequiredService<IUserRepository>();
 
-    DbSeeder.SeedInitialUsers(userRepostory);
+   // DbSeeder.SeedInitialUsers(userRepostory);
 }
 
 // Configure the HTTP request pipeline.
