@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using Catalog.AppDBContext;
 using Catalog.Repositories;
 using Catalog.Repository;
+using Catalog.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,6 +62,16 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<ClassService>();
+builder.Services.AddScoped<GradeService>();
+
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+    });
+
+
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
