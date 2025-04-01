@@ -69,6 +69,12 @@ namespace Catalog.Repositories
             _context.Users.Update(existingUser);
             _context.SaveChanges();
         }
+        public Student? GetStudentByUsername(string username)
+        {
+            return _context.Users
+                           .OfType<Student>() 
+                           .FirstOrDefault(s => s.Name == username);
+        }
 
     }
 }

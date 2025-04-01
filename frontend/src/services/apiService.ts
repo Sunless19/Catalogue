@@ -48,10 +48,10 @@ export class UserService {
     return this.http.post<{ token: string }>(`${this.apiUrl}/login`, payload).pipe(
       tap((response) => {
         if (response && response.token) {
-          console.log('Saving token:', response.token); // 🔥 Debugging step
+          console.log('Saving token:', response.token);
           localStorage.setItem('token', response.token);
         } else {
-          console.error('❌ No token received from server');
+          console.error('No token received from server');
         }
       })
     );
@@ -69,10 +69,10 @@ export class UserService {
 
   getClasses(): Observable<any[]> {
     const token = localStorage.getItem('token'); 
-    console.log('Token being sent:', token); // 🔥 Debugging step
+    console.log('Token being sent:', token);
   
     if (!token) {
-      console.error('❌ No token found in local storage');
+      console.error('No token found in local storage');
       return new Observable(observer => {
         observer.error('No token available');
       });
@@ -80,5 +80,20 @@ export class UserService {
   
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.get<any[]>(`http://localhost:5063/api/teacher/classes`, { headers });
+  }
+  addStudentToClass(className: string, studentName: string): Observable<any> {
+    const token = localStorage.getItem('token');
+  
+    if (!token) {
+      console.error('No token found in local storage');
+      return new Observable(observer => {
+        observer.error('No token available');
+      });
+    }
+  
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const payload = { className, studentName };
+  
+    return this.http.post<any>(`http://localhost:5063/api/teacher/add-student`, payload, { headers });
   }
 }

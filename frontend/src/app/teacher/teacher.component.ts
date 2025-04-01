@@ -1,22 +1,26 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/apiService';
+import { FormsModule } from '@angular/forms';
+
 
 interface Class {
   name: string;
   students: string[];
   expanded: boolean;
+  showInput?: boolean;
+  newStudentName?: string;
 }
 
 @Component({
   selector: 'app-teacher',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './teacher.component.html',
   styleUrl: './teacher.component.css'
 })
 export class TeacherComponent {
-  classes: any[] = [];
+  classes: Class[] = [];
 
   constructor(private userService: UserService) {}
 
@@ -29,7 +33,9 @@ export class TeacherComponent {
       next: (data) => {
         this.classes = data.map((classItem: any) => ({
           ...classItem,
-          expanded: false // Default collapsed state
+          expanded: false,
+          showInput: false,
+          newStudentName: ''
         }));
       },
       error: (error) => {
@@ -37,11 +43,41 @@ export class TeacherComponent {
       }
     });
   }
-  toggleClass(index: number) {
+
+  toggleClass(index: number, event: Event) {
+    const target = event.target as HTMLElement;
+  
+    if (target.tagName === 'BUTTON' || target.tagName === 'INPUT' || target.tagName === 'LI') {
+      event.stopPropagation(); 
+      return;
+    }
+  
     this.classes[index].expanded = !this.classes[index].expanded;
   }
+
+  showInputField(index: number, event: Event) {
+    event.stopPropagation();
+    this.classes[index].showInput = true;
+  }
+
   addStudent(index: number, event: Event) {
     event.stopPropagation();
-    console.log(`Add student to class: ${this.classes[index].name}`);
+  
+    const studentName = this.classes[index].newStudentName?.trim();
+    const className = this.classes[index].name;
+  
+    if (studentName) {
+      this.userService.addStudentToClass(className, studentName).subscribe({
+        next: (response) => {
+          console.log(`Student added successfully: ${studentName}`, response);
+          this.classes[index].students.push(studentName);
+          this.classes[index].newStudentName = '';
+          this.classes[index].showInput = false;
+        },
+        error: (error) => {
+          console.error('Error adding student:', error?.error?.message || 'Unknown error occurred.');
+        }
+      });
+    }
   }
 }

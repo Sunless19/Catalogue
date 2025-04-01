@@ -29,4 +29,28 @@ public class TeacherController : ControllerBase
         var classes = _teacherService.GetClassesByTeacherId(teacherId);
         return Ok(classes);
     }
+    [HttpPost("add-student")]
+    public IActionResult AddStudentToClass([FromBody] AddStudentRequest request)
+    {
+        if (request == null || string.IsNullOrWhiteSpace(request.ClassName) || string.IsNullOrWhiteSpace(request.StudentName))
+        {
+            return BadRequest(new { Message = "Invalid request data." });
+        }
+
+        string errorMessage;
+        bool success = _teacherService.AddStudentToClass(request.ClassName, request.StudentName, out errorMessage);
+
+        if (!success)
+        {
+            return BadRequest(new { Message = errorMessage });
+        }
+
+        return Ok(new { Message = "Student added successfully." });
+    }
+
+    public class AddStudentRequest
+    {
+        public string ClassName { get; set; }
+        public string StudentName { get; set; }
+    }
 }
