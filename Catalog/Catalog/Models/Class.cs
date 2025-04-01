@@ -13,7 +13,7 @@ namespace Catalog.Models
         public string? Information { get; set; }
 
         // Navigation property for Students
-        public ICollection<Student> Students { get; set; } = new List<Student>();
+        public ICollection<StudentClass> StudentClasses { get; set; } = new List<StudentClass>();
 
         // Foreign key for Teacher
         public int? TeacherId { get; set; }

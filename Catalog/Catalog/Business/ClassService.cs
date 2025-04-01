@@ -1,13 +1,15 @@
 ﻿using Catalog.Dtos;
+using Catalog.Models;
 using Catalog.Repositories;
 using Catalog.Repository;
+using Microsoft.EntityFrameworkCore;
 
-public class TeacherService : ITeacherRepository
+public class ClassService : IClassRepository
 {
     private readonly IClassRepository _classRepository;
     private readonly IUserRepository _userRepository;
 
-    public TeacherService(IClassRepository classRepository, IUserRepository userRepository)
+    public ClassService(IClassRepository classRepository, IUserRepository userRepository)
     {
         _classRepository = classRepository;
         _userRepository = userRepository;
@@ -21,7 +23,6 @@ public class TeacherService : ITeacherRepository
     public bool AddStudentToClass(string className, string studentName, out string errorMessage)
     {
         errorMessage = string.Empty;
-
         var student = _userRepository.GetStudentByUsername(studentName);
         if (student == null)
         {
@@ -36,15 +37,23 @@ public class TeacherService : ITeacherRepository
             return false;
         }
 
-        if (classEntity.Students.Contains(student))
+        // Check if student is already in this class
+        if (classEntity.StudentClasses.Any(sc => sc.StudentId == student.UserId))
         {
-            errorMessage = "Student already exists in this class.";
+            errorMessage = "Student is already in this class.";
             return false;
         }
 
-        classEntity.Students.Add(student);
+        // Add the student to the class
+        classEntity.StudentClasses.Add(new StudentClass { StudentId = student.UserId, ClassId = classEntity.Id });
         _classRepository.Save();
 
         return true;
     }
+
+
+    public void Update(Class classEntity) => _classRepository.Update(classEntity);
+    public Class? GetById(int classId) => _classRepository.GetById(classId);
+    public Class? GetByName(string className) => _classRepository.GetByName(className);
+    public void Save() => _classRepository.Save();
 }

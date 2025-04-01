@@ -41,6 +41,21 @@ namespace Catalog.Migrations
                     b.ToTable("Classes");
                 });
 
+            modelBuilder.Entity("Catalog.Models.StudentClass", b =>
+                {
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
+
+                    b.HasKey("StudentId", "ClassId");
+
+                    b.HasIndex("ClassId");
+
+                    b.ToTable("StudentClasses");
+                });
+
             modelBuilder.Entity("Catalog.Models.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -77,11 +92,6 @@ namespace Catalog.Migrations
                 {
                     b.HasBaseType("Catalog.Models.User");
 
-                    b.Property<int?>("ClassId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("ClassId");
-
                     b.HasDiscriminator().HasValue("Student");
                 });
 
@@ -102,16 +112,33 @@ namespace Catalog.Migrations
                     b.Navigation("Teacher");
                 });
 
-            modelBuilder.Entity("Catalog.Models.Student", b =>
+            modelBuilder.Entity("Catalog.Models.StudentClass", b =>
                 {
-                    b.HasOne("Catalog.Models.Class", null)
-                        .WithMany("Students")
-                        .HasForeignKey("ClassId");
+                    b.HasOne("Catalog.Models.Class", "Class")
+                        .WithMany("StudentClasses")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Catalog.Models.Student", "Student")
+                        .WithMany("StudentClasses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("Catalog.Models.Class", b =>
                 {
-                    b.Navigation("Students");
+                    b.Navigation("StudentClasses");
+                });
+
+            modelBuilder.Entity("Catalog.Models.Student", b =>
+                {
+                    b.Navigation("StudentClasses");
                 });
 
             modelBuilder.Entity("Catalog.Models.Teacher", b =>

@@ -79,7 +79,7 @@ export class UserService {
     }
   
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<any[]>(`http://localhost:5063/api/teacher/classes`, { headers });
+    return this.http.get<any[]>(`http://localhost:5063/api/class/show-classes`, { headers });
   }
   addStudentToClass(className: string, studentName: string): Observable<any> {
     const token = localStorage.getItem('token');
@@ -94,6 +94,6 @@ export class UserService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     const payload = { className, studentName };
   
-    return this.http.post<any>(`http://localhost:5063/api/teacher/add-student`, payload, { headers });
+    return this.http.post<any>(`http://localhost:5063/api/class/add-student`, payload, { headers });
   }
 }

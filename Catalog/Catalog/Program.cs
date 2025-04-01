@@ -60,7 +60,7 @@ builder.Services.AddDbContext<ApplicationDBContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
-builder.Services.AddScoped<ITeacherRepository, TeacherService>();
+builder.Services.AddScoped<ClassService>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
