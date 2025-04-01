@@ -14,5 +14,7 @@ namespace Catalog.Repositories
         void Update(User user);
 
         void Save();
+
+        Student? GetStudentByUsername(string username);
     }
 }

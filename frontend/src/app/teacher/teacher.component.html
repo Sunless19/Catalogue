@@ -1,1 +1,27 @@
-<p>Welcome to teacher view!</p>
+<div class="full-page-wrapper">
+    <div class="teacher-container">
+      <h2>Your Classes</h2>
+      <ul class="class-list">
+        <li *ngFor="let classItem of classes; let i = index" (click)="toggleClass(i, $event)" class="class-item">
+            <div class="class-header">
+              {{ classItem.name }}
+              <button *ngIf="classItem.expanded" class="add-student-btn" (click)="showInputField(i, $event)">
+                +
+              </button>
+            </div>
+          
+            <ul *ngIf="classItem.expanded" class="student-list">
+              <li *ngFor="let student of classItem.students" (click)="$event.stopPropagation()">
+                {{ student }}
+              </li>
+              <!-- Input Field for New Student -->
+              <li *ngIf="classItem.showInput">
+                <input type="text" [(ngModel)]="classItem.newStudentName" placeholder="Enter student name" (click)="$event.stopPropagation()" />
+                <button (click)="addStudent(i, $event)">✔</button>
+              </li>
+            </ul>
+          </li>
+      </ul>
+    </div>
+  </div>
+  
