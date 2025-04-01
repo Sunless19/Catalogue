@@ -10,6 +10,7 @@ interface Class {
   expanded: boolean;
   showInput?: boolean;
   newStudentName?: string;
+  userId: number;
 }
 
 @Component({
@@ -23,9 +24,10 @@ export class TeacherComponent {
   classes: Class[] = [];
 
   constructor(private userService: UserService) {}
-
+  teacherId?: number ;
   ngOnInit(): void {
     this.fetchClasses();
+    
   }
 
   fetchClasses(): void {
@@ -37,6 +39,9 @@ export class TeacherComponent {
           showInput: false,
           newStudentName: ''
         }));
+        console.log('Processed classes:', this.classes);
+        this.teacherId = this.classes[0].userId; 
+        console.log('Teacher ID:', this.teacherId);
       },
       error: (error) => {
         console.error('Error fetching classes:', error);
@@ -65,6 +70,7 @@ export class TeacherComponent {
   
     const studentName = this.classes[index].newStudentName?.trim();
     const className = this.classes[index].name;
+    
   
     if (studentName) {
       this.userService.addStudentToClass(className, studentName).subscribe({
