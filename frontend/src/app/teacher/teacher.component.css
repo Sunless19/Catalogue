@@ -1,98 +1,125 @@
-body, html {
-    height: 100%;
-    margin: 0;
-    background-color: #f6f8fa;
-  }
-  
-  .full-page-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-  }
-  
-  .teacher-container {
-    width: 100%;
-    max-width: 400px;
-    padding: 40px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    box-sizing: border-box;
-  }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  .class-list {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .class-list li {
-    background: #007bff;
-    color: white;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    text-align: center;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-  }
-  
-  .class-list li:hover {
-    background: #0056b3;
-  }
-  
-  .student-list {
-    list-style-type: none;
-    padding: 10px;
-    background: #f1f1f1;
-    border-radius: 8px;
-    margin-top: 5px;
-  }
-  
-  .student-list li {
-    padding: 8px;
-    border-bottom: 1px solid #ccc;
-    color: #333;
-  }
-  
-  .student-list li:last-child {
-    border-bottom: none;
-  }
+.error-message {
+  color: #dc3545; /* Red */
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+}
 
-  .class-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .add-student-btn {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .add-student-btn:hover {
-    background-color: #218838;
-  }
-  
+.student-list-item {
+  padding: 10px 8px; /* Add more padding */
+  border-bottom: 1px solid #eee; /* Lighter border */
+  background-color: #fff; /* White background for contrast */
+  color: #333;
+  margin-bottom: 5px; /* Space between students */
+  border-radius: 4px; /* Slightly rounded corners */
+}
+
+.student-list-item:last-child {
+  border-bottom: none;
+}
+
+.student-name {
+  font-weight: bold;
+  margin-bottom: 5px; /* Space between name and grades */
+}
+
+.grades-list {
+  list-style-type: none;
+  padding-left: 15px; /* Indent grades */
+  margin-top: 5px;
+  font-size: 0.9em; /* Slightly smaller font for grades */
+}
+
+.grade-item {
+  color: #555; /* Darker grey for grades */
+  padding: 2px 0;
+}
+
+.no-grades, .loading-grades-student, .no-students {
+  font-style: italic;
+  color: #888;
+  padding: 5px 0;
+  font-size: 0.9em;
+}
+
+.add-student-form {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #e9ecef; /* Light background for the form */
+  border-radius: 6px;
+  display: flex;
+  gap: 5px; /* Space between input and buttons */
+}
+
+.add-student-form input {
+  flex-grow: 1; /* Input takes available space */
+  padding: 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.add-student-form button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #28a745; /* Green for Add */
+  color: white;
+  transition: background-color 0.2s ease;
+}
+
+.add-student-form button:hover {
+   background-color: #218838;
+}
+
+.add-student-form button:last-of-type { /* Style for Cancel button */
+  background-color: #6c757d; /* Grey for Cancel */
+}
+.add-student-form button:last-of-type:hover {
+  background-color: #5a6268;
+}
+
+
+/* Adjust existing styles if needed */
+.class-list li {
+  background: #eef; /* Lighter background for class item overall */
+  color: #333; /* Darker text */
+  padding: 0; /* Remove padding, header/content will have it */
+  border-radius: 8px;
+  margin-bottom: 15px; /* More space between classes */
+  cursor: default; /* Default cursor, header is clickable */
+  text-align: left; /* Align text left */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Subtle shadow */
+  transition: box-shadow 0.3s ease;
+}
+
+.class-list li:hover {
+   box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Slightly larger shadow on hover */
+}
+
+.class-header {
+  /* Keep existing styles */
+  background: #007bff; /* Blue background for header */
+  color: white;
+  padding: 12px 15px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  cursor: pointer; /* Make header clickable for toggle */
+}
+
+/* Ensure expanded content doesn't have the blue background */
+.student-list {
+   background: transparent; /* Remove grey background */
+   padding: 10px 15px 15px 15px; /* Padding around student list */
+   margin-top: 0;
+   border-bottom-left-radius: 8px; /* Match parent rounding */
+   border-bottom-right-radius: 8px;
+}
+
+/* Prevent clicks inside student list from toggling class */
+.student-list li, .add-student-form {
+  cursor: default;
+}

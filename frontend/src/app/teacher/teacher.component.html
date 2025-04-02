@@ -1,27 +1,75 @@
 <div class="full-page-wrapper">
-    <div class="teacher-container">
-      <h2>Your Classes</h2>
-      <ul class="class-list">
-        <li *ngFor="let classItem of classes; let i = index" (click)="toggleClass(i, $event)" class="class-item">
-            <div class="class-header">
-              {{ classItem.name }}
-              <button *ngIf="classItem.expanded" class="add-student-btn" (click)="showInputField(i, $event)">
-                +
-              </button>
-            </div>
-          
-            <ul *ngIf="classItem.expanded" class="student-list">
-              <li *ngFor="let student of classItem.students" (click)="$event.stopPropagation()">
-                {{ student }}
-              </li>
-              <!-- Input Field for New Student -->
-              <li *ngIf="classItem.showInput">
-                <input type="text" [(ngModel)]="classItem.newStudentName" placeholder="Enter student name" (click)="$event.stopPropagation()" />
-                <button (click)="addStudent(i, $event)">✔</button>
-              </li>
-            </ul>
-          </li>
-      </ul>
+  <div class="teacher-container">
+    <h2>My Classes</h2>
+
+    <!-- Loading Indicators -->
+    <div *ngIf="isLoadingClasses">Loading classes...</div>
+    <div *ngIf="isLoadingGrades && !isLoadingClasses">Loading grades...</div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+    <!-- Class List -->
+    <ul class="class-list" *ngIf="!isLoadingClasses && classes.length > 0">
+      <li *ngFor="let class of classes; let i = index" (click)="toggleClass(i, $event)">
+
+        <!-- Class Header (Name and Add Button) -->
+        <div class="class-header">
+          <span>{{ class.name }}</span>
+          <button
+            *ngIf="!class.showInput"
+            class="add-student-btn"
+            (click)="showInputField(i, $event)"
+            title="Add Student"
+          >+</button>
+        </div>
+
+        <!-- Add Student Input Form -->
+        <div *ngIf="class.showInput" class="add-student-form" (click)="$event.stopPropagation()">
+           <input
+              type="text"
+              [(ngModel)]="class.newStudentName"
+              placeholder="New student name"
+              (keyup.enter)="addStudent(i, $event)"
+              (click)="$event.stopPropagation()"
+            />
+            <button (click)="addStudent(i, $event)" (click)="$event.stopPropagation()">Add</button>
+            <button (click)="class.showInput = false; $event.stopPropagation()">Cancel</button>
+        </div>
+
+
+        <!-- Student List (Shown when expanded) -->
+        <div *ngIf="class.expanded">
+          <ul class="student-list">
+            <li *ngIf="class.students.length === 0" class="no-students">No students in this class yet.</li>
+
+            <!-- Iterate over Student Objects -->
+            <li *ngFor="let student of class.students" class="student-list-item">
+              <div class="student-name">{{ student.name }}</div>
+
+              <!-- Grades List for the Student -->
+              <ul class="grades-list" *ngIf="student.grades.length > 0">
+                 <li *ngFor="let grade of student.grades" class="grade-item">
+                    <!-- Display grade value, maybe assignment name if available -->
+                    {{ grade.assignmentName ? grade.assignmentName + ': ' : '' }}{{ grade.value }}
+                 </li>
+              </ul>
+              <div *ngIf="student.grades.length === 0 && !isLoadingGrades" class="no-grades">
+                No grades recorded yet.
+              </div>
+               <div *ngIf="isLoadingGrades" class="loading-grades-student">
+                 Loading grades...
+               </div>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+
+    <!-- Message if no classes are found -->
+    <div *ngIf="!isLoadingClasses && classes.length === 0 && !errorMessage">
+      You are not currently assigned to any classes.
     </div>
+
   </div>
-  
+</div>
