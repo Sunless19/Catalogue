@@ -4,13 +4,26 @@ import { TeacherComponent } from './teacher/teacher.component';
 import { StudentComponent } from './student/student.component';
 import { ErrorComponent } from './error/error.component';
 import { RegisterComponent } from './register/register.component';
+import { AuthGuard } from './guards/auth.guard';
+import { RoleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
-    { path: 'teacher', component: TeacherComponent},
-    { path: 'student', component: StudentComponent},
     { path: 'register', component: RegisterComponent},
-    { path: 'error', component: ErrorComponent},
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+    {
+        path: 'student',
+        component: StudentComponent,
+        canActivate: [AuthGuard, RoleGuard],
+        data: { role: 'Student' }
+      },
+      {
+        path: 'teacher',
+        component: TeacherComponent,
+        canActivate: [AuthGuard, RoleGuard],
+        data: { role: 'Teacher' }
+      },
+      { path: 'error', component: ErrorComponent },
+      { path: '', redirectTo: 'login', pathMatch: 'full' }
 ];
   
