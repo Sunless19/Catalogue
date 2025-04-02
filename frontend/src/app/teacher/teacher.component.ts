@@ -6,13 +6,13 @@ export interface Grade {
   className: string;   
   assignmentName?: string;
   classId?: number;
-  studentId?: number;
+  studentId: number;
 }
 
 export interface Student {
   name: string;
   grades: Grade[];
-  studentId?: number; 
+  studentId: number; 
 }
 
 export interface Class {
@@ -22,7 +22,7 @@ export interface Class {
   showInput?: boolean;
   newStudentName?: string;
   userId: number;
-  classId?: number;
+  classId: number;
 }
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -63,30 +63,33 @@ export class TeacherComponent implements OnInit {
     this.isLoadingClasses = true;
     this.errorMessage = null;
     this.userService.getClasses().subscribe({
-      next: (data) => {
-        console.log('Raw classes data:', data);
-        this.classes = data.map((classItem: any): Class => ({
-          name: classItem.name,
-          userId: classItem.userId, 
-          students: (classItem.students as string[] || []).map((studentName): Student => ({
-             name: studentName,
-             grades: [] 
-          })),
-          expanded: false,
-          showInput: false,
-          newStudentName: ''
-        }));
-        console.log('Processed classes:', this.classes);
-        this.isLoadingClasses = false;
-        this.fetchAndProcessGrades();
-      },
-      error: (error) => {
-        console.error('Error fetching classes:', error);
-        this.errorMessage = 'Failed to load classes. Please try again later.';
-        this.isLoadingClasses = false;
-      }
+        next: (data) => {
+            console.log('Raw classes data:', data);
+            this.classes = data.map((classItem: any): Class => ({
+                name: classItem.name,
+                userId: classItem.userId,
+                classId: classItem.id, // Include classId for proper mapping
+                students: (classItem.students || []).map((student: any): Student => ({
+                    name: student.studentName, // Correctly map student names
+                    studentId: student.studentId, // Include studentId for grade linking
+                    grades: []
+                })),
+                expanded: false,
+                showInput: false,
+                newStudentName: ''
+            }));
+            console.log('Processed classes:', this.classes);
+            this.isLoadingClasses = false;
+            this.fetchAndProcessGrades();
+        },
+        error: (error) => {
+            console.error('Error fetching classes:', error);
+            this.errorMessage = 'Failed to load classes. Please try again later.';
+            this.isLoadingClasses = false;
+        }
     });
-  }
+}
+
 
   fetchAndProcessGrades(): void {
     if (!this.teacherId) {
@@ -114,48 +117,45 @@ export class TeacherComponent implements OnInit {
   }
 
   processGrades(grades: Grade[]): void {
-    const gradeMap = new Map<string, Map<string, Grade[]>>();
+    const gradeMap = new Map<number, Map<number, Grade[]>>(); // Use classId & studentId as keys
 
     for (const grade of grades) {
-        if (!grade.className || !grade.studentName) {
-            console.warn("Skipping grade due to missing className or studentName:", grade);
+        if (!grade.classId || !grade.studentId) {
+            console.warn("Skipping grade due to missing classId or studentId:", grade);
             continue;
         }
 
-        if (!gradeMap.has(grade.className)) {
-            gradeMap.set(grade.className, new Map<string, Grade[]>());
+        if (!gradeMap.has(grade.classId)) {
+            gradeMap.set(grade.classId, new Map<number, Grade[]>());
         }
 
-        const classGradeMap = gradeMap.get(grade.className)!;
+        const classGradeMap = gradeMap.get(grade.classId)!;
 
-        if (!classGradeMap.has(grade.studentName)) {
-            classGradeMap.set(grade.studentName, []);
+        if (!classGradeMap.has(grade.studentId)) {
+            classGradeMap.set(grade.studentId, []);
         }
 
-        classGradeMap.get(grade.studentName)!.push(grade);
+        classGradeMap.get(grade.studentId)!.push(grade);
     }
 
     console.log("Processed grade map:", gradeMap);
 
     for (const cls of this.classes) {
-        const classGradeMap = gradeMap.get(cls.name);
+        const classGradeMap = gradeMap.get(cls.classId);
         if (classGradeMap) {
             for (const student of cls.students) {
-                const studentGrades = classGradeMap.get(student.name);
-                if (studentGrades) {
-                    student.grades = studentGrades;
-                } else {
-                    student.grades = []; 
-                }
+                const studentGrades = classGradeMap.get(student.studentId);
+                student.grades = studentGrades ? studentGrades : [];
             }
         } else {
-             for (const student of cls.students) {
-                 student.grades = [];
-             }
+            for (const student of cls.students) {
+                student.grades = [];
+            }
         }
     }
     console.log("Classes after grade processing:", this.classes);
-  }
+}
+
 
 
   toggleClass(index: number, event: Event) {
@@ -182,7 +182,7 @@ export class TeacherComponent implements OnInit {
       this.userService.addStudentToClass(className, studentName).subscribe({
         next: (response) => {
           console.log(`Student added successfully via API: ${studentName}`, response);
-          const newStudent: Student = { name: studentName, grades: [] };
+          const newStudent: Student = { name: studentName, grades: [] , studentId: response.studentId };
           this.classes[index].students.push(newStudent);
           this.classes[index].newStudentName = '';
           this.classes[index].showInput = false;
