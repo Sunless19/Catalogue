@@ -23,8 +23,8 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Description = "Introduce tokenul JWT în formatul: Bearer {token}"
@@ -111,10 +111,10 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowOrigin");
 
 //app.UseHttpsRedirection();
-app.UseAuthentication();
+//app.UseAuthentication();
 
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
 app.MapControllers();
 
