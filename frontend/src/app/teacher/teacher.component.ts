@@ -9,6 +9,10 @@ export interface Grade {
   classId?: number;
   studentId: number;
   date?: string;
+  isEditing?: boolean;
+  editValue?: string | number; 
+  editDate?: string;
+  id: number;
 }
 
 export interface Student {
@@ -46,7 +50,12 @@ export class TeacherComponent implements OnInit {
   isLoadingGrades = false;
   errorMessage: string | null = null;
   newGradeValues: { [studentId: number]: string | number } = {};
-
+  editingGradeId: number | null = null;
+  editingGradeValue: string | number = '';
+  // Store date as string in YYYY-MM-DD format for <input type="date">
+  editingGradeDate: string = '';
+  // Store context for updating the local array after save
+  private editingContext: { classId: number, studentId: number } | null = null;
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
@@ -197,6 +206,64 @@ addGrade(studentId: number, classId: number) {
     }
     console.log("Classes after grade processing:", this.classes);
 }
+
+startEditGrade(grade: Grade): void {
+  console.log('Editing grade:', grade);
+
+  this.cancelEditGrade(grade);
+
+  grade.isEditing = true;
+  grade.editValue = grade.value;
+  grade.editDate = grade.date ? new Date(grade.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+}
+
+
+cancelEditGrade(grade: Grade): void {
+  grade.isEditing = false;
+  grade.editValue = undefined;
+  grade.editDate = undefined;
+}
+
+
+saveEditGrade(grade: Grade): void {
+
+  console.log('Saving grade:', grade.gradeId);
+  if (!grade.gradeId) {
+    console.error('Error: gradeId is missing or undefined.', grade);
+    this.errorMessage = 'Cannot update grade: Missing gradeId.';
+    return;
+  }
+
+  if (!grade.editValue) {
+    console.warn('Grade value cannot be empty.');
+    return;
+  }
+
+  const updatePayload: Partial<Grade> = {
+    value: grade.editValue,
+    date: new Date(grade.editDate!).toISOString()
+  };
+
+  console.log('Updating grade:', grade.gradeId, updatePayload);
+
+  this.userService.updateGrade(grade.gradeId, updatePayload).subscribe({
+    next: (updatedGrade) => {
+      console.log('Grade updated successfully:', updatedGrade);
+
+      // Update the local grade
+      grade.value = updatedGrade.value;
+      grade.date = updatedGrade.date;
+
+      // Exit edit mode
+      this.cancelEditGrade(grade);
+    },
+    error: (error) => {
+      console.error('Error updating grade:', error);
+      this.errorMessage = `Error updating grade: ${error?.error?.message || 'Unknown error'}`;
+    }
+  });
+}
+
 
 
 

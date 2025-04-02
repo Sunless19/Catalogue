@@ -50,7 +50,25 @@
               <!-- Grades List -->
               <ul class="grades-list" *ngIf="student.grades.length > 0">
                 <li *ngFor="let grade of student.grades" class="grade-item">
-                  {{ grade.assignmentName ? grade.assignmentName + ': ' : '' }}{{ grade.value }}
+
+                  <ng-container *ngIf="!grade.isEditing">
+                    <span>
+                      {{ grade.assignmentName ? grade.assignmentName + ': ' : '' }}{{ grade.value }}
+                      <span class="grade-date" *ngIf="grade.date"> ({{ grade.date | date:'shortDate' }})</span>
+                    </span>
+                    <button class="edit-grade-btn" (click)="startEditGrade(grade); $event.stopPropagation()">Edit</button>
+                  </ng-container>
+                  
+                  <!-- Edit Mode -->
+                  <ng-container *ngIf="grade.isEditing">
+                    <div class="edit-grade-form" (click)="$event.stopPropagation()">
+                      <input type="text" [(ngModel)]="grade.editValue" placeholder="Grade value" />
+                      <input type="date" [(ngModel)]="grade.editDate" />
+                      <button (click)="saveEditGrade(grade)">Save</button>
+                      <button (click)="cancelEditGrade(grade)">Cancel</button>
+                    </div>
+                  </ng-container>
+
                 </li>
               </ul>
             
