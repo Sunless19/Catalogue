@@ -1,12 +1,14 @@
 
 export interface Grade {
   gradeId: number;
+  teacherId: number | null;
   value: string | number; 
   studentName: string; 
   className: string;   
   assignmentName?: string;
   classId?: number;
   studentId: number;
+  date?: string;
 }
 
 export interface Student {
@@ -43,6 +45,7 @@ export class TeacherComponent implements OnInit {
   isLoadingClasses = false;
   isLoadingGrades = false;
   errorMessage: string | null = null;
+  newGradeValues: { [studentId: number]: string | number } = {};
 
   constructor(private userService: UserService) {}
 
@@ -88,6 +91,45 @@ export class TeacherComponent implements OnInit {
             this.isLoadingClasses = false;
         }
     });
+}
+
+addGrade(studentId: number, classId: number) {
+  if (!this.newGradeValues[studentId]) {
+    console.warn('Grade value is required.');
+    return;
+  }
+
+  const newGrade: Partial<Grade> = {
+    teacherId: this.teacherId,
+    studentId: studentId,
+    classId: classId,
+    value: this.newGradeValues[studentId],
+    date: new Date().toISOString()
+  };
+
+  this.userService.addGrade(newGrade).subscribe({
+    next: (response) => {
+      console.log('Grade added successfully:', response);
+
+      // Find the student and update their grades list
+      for (const cls of this.classes) {
+        if (cls.classId === classId) {
+          for (const student of cls.students) {
+            if (student.studentId === studentId) {
+              student.grades.push(response);
+              break;
+            }
+          }
+        }
+      }
+
+      this.newGradeValues[studentId] = ''; // Reset input field for that student
+    },
+    error: (error) => {
+      console.error('Error adding grade:', error);
+      this.errorMessage = `Error adding grade: ${error?.error?.message || 'Unknown error'}`;
+    }
+  });
 }
 
 

@@ -46,20 +46,28 @@
             <!-- Iterate over Student Objects -->
             <li *ngFor="let student of class.students" class="student-list-item">
               <div class="student-name">{{ student.name }}</div>
-
-              <!-- Grades List for the Student -->
+            
+              <!-- Grades List -->
               <ul class="grades-list" *ngIf="student.grades.length > 0">
-                 <li *ngFor="let grade of student.grades" class="grade-item">
-                    <!-- Display grade value, maybe assignment name if available -->
-                    {{ grade.assignmentName ? grade.assignmentName + ': ' : '' }}{{ grade.value }}
-                 </li>
+                <li *ngFor="let grade of student.grades" class="grade-item">
+                  {{ grade.assignmentName ? grade.assignmentName + ': ' : '' }}{{ grade.value }}
+                </li>
               </ul>
+            
               <div *ngIf="student.grades.length === 0 && !isLoadingGrades" class="no-grades">
                 No grades recorded yet.
               </div>
-               <div *ngIf="isLoadingGrades" class="loading-grades-student">
-                 Loading grades...
-               </div>
+            
+              <!-- Add New Grade Form -->
+              <div class="add-grade-form">
+                <input
+                  type="text"
+                  [(ngModel)]="newGradeValues[student.studentId]"
+                  placeholder="Enter grade"
+                />
+                <button (click)="addGrade(student.studentId, class.classId)">Submit</button>
+              </div>
+              
             </li>
           </ul>
         </div>
