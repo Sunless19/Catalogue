@@ -12,6 +12,8 @@ namespace Catalog.AppDBContext
         public DbSet<Student> Students { get; set; }
         public DbSet<Class> Classes { get; set; }
         public DbSet<StudentClass> StudentClasses { get; set; }
+        public DbSet<Grade> Grades { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = "server=localhost;port=3306;database=MyAppDb;user=myuser;password=mypass";
@@ -46,6 +48,25 @@ namespace Catalog.AppDBContext
                 .HasOne(sc => sc.Class)
                 .WithMany(c => c.StudentClasses)
                 .HasForeignKey(sc => sc.ClassId); ;
+
+            modelBuilder.Entity<Grade>()
+                .HasOne(g => g.Student)
+                .WithMany()
+                .HasForeignKey(g => g.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Grade>()
+                .HasOne(g => g.Class)
+                .WithMany()
+                .HasForeignKey(g => g.ClassId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Grade>()
+                .HasOne(g => g.Teacher)
+                .WithMany()
+                .HasForeignKey(g => g.TeacherId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
 
             base.OnModelCreating(modelBuilder);

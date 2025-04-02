@@ -20,17 +20,24 @@ namespace Catalog.Repositories // ✅ Changed namespace to match the project str
         {
             return _context.Classes
                 .Where(c => c.TeacherId == teacherId)
-                .Include(c => c.StudentClasses) // Include StudentClasses for eager loading
-                .ThenInclude(sc => sc.Student)  // Then include actual Student details
+                .Include(c => c.StudentClasses)
+                    .ThenInclude(sc => sc.Student)
                 .Select(c => new ClassDto
                 {
                     Id = c.Id,
                     Name = c.Name,
                     Information = c.Information,
                     UserId = c.TeacherId ?? 0,
-                    Students = c.StudentClasses.Select(sc => sc.Student.Name).ToList()
+                    Students = c.StudentClasses
+                        .Select(sc => new StudentClassDto
+                        {
+                            StudentId = sc.StudentId,
+                            ClassId = sc.ClassId,
+                            StudentName = sc.Student.Name
+                        }).ToList()
                 }).ToList();
         }
+
 
         public Class? GetById(int classId)
         {

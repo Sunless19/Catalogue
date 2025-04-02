@@ -6,7 +6,6 @@ using Catalog.Repository;
 
 [ApiController]
 [Route("api/class")]
-[Authorize(Roles = "Teacher")]
 public class ClassController : ControllerBase
 {
     private readonly IClassRepository _classService;

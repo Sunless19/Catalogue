@@ -1,28 +1,59 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { UserRole } from '../models/userRole';
 import { jwtDecode } from 'jwt-decode';
-import { tap } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 
+import { Grade } from '../app/teacher/teacher.component';
 
 export interface JwtPayload {
-  name: string;
+  nameid: string;
+  unique_name: string;
   role: UserRole;
   exp: number;
 }
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:5063/User'; 
+  private apiUrl = 'http://localhost:5063/User';
+  private classApiUrl = 'http://localhost:5063/api/class';
+  private gradeApiUrl = 'http://localhost:5063/api/Grade';
 
   constructor(private http: HttpClient) {}
-  
+
+  // Token and role methods (unchanged)
+  private getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.getToken();
+    if (!token) {
+      console.error('No token found in local storage');
+      return new HttpHeaders();
+    }
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
+
+  getTeacherId(): number | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const decoded = jwtDecode<JwtPayload>(token);
+      const userId = parseInt(decoded.nameid, 10);
+      return !isNaN(userId) ? userId : null;
+    } catch (err) {
+      console.error('Invalid token or missing ID claim', err);
+      return null;
+    }
+  }
+
   getUserRole(): UserRole | null {
-    const token = localStorage.getItem('token');
+    const token = this.getToken();
     if (!token) return null;
 
     try {
@@ -42,9 +73,9 @@ export class UserService {
     return this.getUserRole() === UserRole.Teacher;
   }
 
+  // Auth API calls (unchanged)
   login(email: string, password: string): Observable<{ token: string }> {
     const payload = { username: email, password };
-  
     return this.http.post<{ token: string }>(`${this.apiUrl}/login`, payload).pipe(
       tap((response) => {
         if (response && response.token) {
@@ -57,43 +88,100 @@ export class UserService {
     );
   }
 
-  
   register(payload: any): Observable<string> {
     return this.http.post<string>(`${this.apiUrl}/register`, payload);
   }
-  
+
   resetPassword(email: string): Observable<any> {
     const payload = { email };
     return this.http.post(`${this.apiUrl}/reset-password`, payload);
   }
 
+  // Class API calls (unchanged)
   getClasses(): Observable<any[]> {
-    const token = localStorage.getItem('token'); 
-    console.log('Token being sent:', token);
-  
-    if (!token) {
-      console.error('No token found in local storage');
-      return new Observable(observer => {
-        observer.error('No token available');
-      });
+    const headers = this.getAuthHeaders();
+    if (!headers.has('Authorization')) {
+      return throwError(() => new Error('Authorization header missing'));
     }
-  
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<any[]>(`http://localhost:5063/api/class/show-classes`, { headers });
+    console.log('Fetching classes with headers:', headers);
+    return this.http.get<any[]>(`${this.classApiUrl}/show-classes`, { headers }).pipe(
+      catchError(err => {
+        console.error('Error fetching classes:', err);
+        return throwError(() => err);
+      })
+    );
   }
+
   addStudentToClass(className: string, studentName: string): Observable<any> {
-    const token = localStorage.getItem('token');
-  
-    if (!token) {
-      console.error('No token found in local storage');
-      return new Observable(observer => {
-        observer.error('No token available');
-      });
+    const headers = this.getAuthHeaders();
+    if (!headers.has('Authorization')) {
+      return throwError(() => new Error('Authorization header missing'));
     }
-  
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     const payload = { className, studentName };
+    return this.http.post<any>(`${this.classApiUrl}/add-student`, payload, { headers }).pipe(
+      catchError(err => {
+        console.error('Error adding student:', err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  // Grade API calls
+  getGradesByTeacher(teacherId: number): Observable<Grade[]> {
+    const headers = this.getAuthHeaders();
+    if (!headers.has('Authorization')) {
+      return throwError(() => new Error('Authorization header missing'));
+    }
+    return this.http.get<Grade[]>(`${this.gradeApiUrl}/teacher/${teacherId}`, { headers }).pipe(
+      tap(grades => console.log(`Fetched ${grades.length} grades for teacher ${teacherId}`)),
+      catchError(err => {
+        console.error(`Error fetching grades for teacher ${teacherId}:`, err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  // New methods for grade operations
+  addGrade(gradeData: Partial<Grade>): Observable<Grade> {
+    const headers = this.getAuthHeaders();
+    if (!headers.has('Authorization')) {
+      return throwError(() => new Error('Authorization header missing'));
+    }
+    return this.http.post<Grade>(`${this.gradeApiUrl}/POST`, gradeData, { headers }).pipe(
+      tap(grade => console.log(`Added grade successfully:`, grade)),
+      catchError(err => {
+        console.error('Error adding grade:', err);
+        return throwError(() => err);
+      })
+    );
+  }
   
-    return this.http.post<any>(`http://localhost:5063/api/class/add-student`, payload, { headers });
+
+  updateGrade(gradeId: number, gradeData: Partial<Grade>): Observable<Grade> {
+    const headers = this.getAuthHeaders();
+    if (!headers.has('Authorization')) {
+      return throwError(() => new Error('Authorization header missing'));
+    }
+    return this.http.put<Grade>(`${this.gradeApiUrl}/update/${gradeId}`, gradeData, { headers }).pipe(
+      tap(grade => console.log(`Updated grade ${gradeId} successfully:`, grade)),
+      catchError(err => {
+        console.error(`Error updating grade ${gradeId}:`, err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  deleteGrade(gradeId: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    if (!headers.has('Authorization')) {
+      return throwError(() => new Error('Authorization header missing'));
+    }
+    return this.http.delete<any>(`${this.gradeApiUrl}/delete/${gradeId}`, { headers }).pipe(
+      tap(_ => console.log(`Deleted grade ${gradeId} successfully`)),
+      catchError(err => {
+        console.error(`Error deleting grade ${gradeId}:`, err);
+        return throwError(() => err);
+      })
+    );
   }
 }
