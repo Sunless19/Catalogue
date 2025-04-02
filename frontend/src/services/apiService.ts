@@ -112,19 +112,7 @@ export class UserService {
     );
   }
 
-  addStudentToClass(className: string, studentName: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    if (!headers.has('Authorization')) {
-      return throwError(() => new Error('Authorization header missing'));
-    }
-    const payload = { className, studentName };
-    return this.http.post<any>(`${this.classApiUrl}/add-student`, payload, { headers }).pipe(
-      catchError(err => {
-        console.error('Error adding student:', err);
-        return throwError(() => err);
-      })
-    );
-  }
+  
 
   // Grade API calls
   getGradesByTeacher(teacherId: number): Observable<Grade[]> {
@@ -180,6 +168,37 @@ export class UserService {
       tap(_ => console.log(`Deleted grade ${gradeId} successfully`)),
       catchError(err => {
         console.error(`Error deleting grade ${gradeId}:`, err);
+        return throwError(() => err);
+      })
+    );
+  }
+  addStudentToClass(className: string, studentName: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    if (!headers.has('Authorization')) {
+      return throwError(() => new Error('Authorization header missing'));
+    }
+    const payload = { className, studentName };
+    return this.http.post<any>(`${this.classApiUrl}/add-student`, payload, { headers }).pipe(
+      catchError(err => {
+        console.error('Error adding student:', err);
+        return throwError(() => err);
+      })
+    );
+  }
+  deleteStudent(classId: number, studentId: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    if (!headers.has('Authorization')) {
+      return throwError(() => new Error('Authorization header missing'));
+    }
+  
+    const payload = { classId, studentId };
+  
+    return this.http.request('DELETE', `${this.classApiUrl}/delete-student`, {
+      headers,
+      body: payload, // ✅ Sending payload in request body
+    }).pipe(
+      catchError(err => {
+        console.error('Error deleting student:', err);
         return throwError(() => err);
       })
     );

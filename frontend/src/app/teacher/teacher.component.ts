@@ -28,6 +28,7 @@ export interface Class {
   newStudentName?: string;
   userId: number;
   classId: number;
+  inputMode: string;
 }
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -156,7 +157,8 @@ export class TeacherComponent implements OnInit {
                 })),
                 expanded: false,
                 showInput: false,
-                newStudentName: ''
+                newStudentName: '',
+                inputMode:''
             }));
             console.log('Processed classes:', this.classes);
             this.isLoadingClasses = false;
@@ -376,9 +378,11 @@ cancelEditGrade(grade: Grade): void {
     this.classes[index].expanded = !this.classes[index].expanded;
   }
 
-  showInputField(index: number, event: Event) {
+  showInputField(classIndex: number, event: Event, mode: 'add' | 'delete') {
     event.stopPropagation();
-    this.classes[index].showInput = true;
+    this.classes[classIndex].showInput = true;
+    this.classes[classIndex].inputMode = mode;
+    this.classes[classIndex].newStudentName = ''; // Reset input field
   }
 
   deleteGrade(grade: Grade, student: Student): void {
@@ -432,5 +436,33 @@ cancelEditGrade(grade: Grade): void {
         }
       });
     }
+  }
+
+  deleteStudent(classIndex: number, event: Event) {
+    event.stopPropagation();
+  
+    const studentName = this.classes[classIndex].newStudentName?.trim();
+    if (!studentName) return;
+  
+    const student = this.classes[classIndex].students.find(s => s.name === studentName);
+    if (!student) {
+      alert("Student not found!");
+      return;
+    }
+  
+    const classId = this.classes[classIndex].classId;
+  
+    this.userService.deleteStudent(classId, student.studentId).subscribe({
+      next: () => {
+        console.log(`Student ${student.studentId} deleted from class ${classId}`);
+        this.classes[classIndex].students = this.classes[classIndex].students.filter(s => s.studentId !== student.studentId);
+        this.classes[classIndex].newStudentName = '';
+        this.classes[classIndex].showInput = false;
+      },
+      error: (error) => {
+        console.error('Error deleting student:', error);
+        this.errorMessage = `Error deleting student: ${error?.error?.message || 'Unknown error'}`;
+      }
+    });
   }
 }
