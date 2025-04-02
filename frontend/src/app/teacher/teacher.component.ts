@@ -57,20 +57,74 @@ export class TeacherComponent implements OnInit {
   private editingContext: { classId: number, studentId: number } | null = null;
   constructor(private userService: UserService) {}
 
+  selectedStudentIds: Set<number> = new Set<number>();
+
+  isAnyStudentSelected(): boolean {
+    return this.selectedStudentIds.size > 0;
+  }
+
+  
+  toggleStudentSelection(studentId: number): void {
+    if (this.selectedStudentIds.has(studentId)) {
+      this.selectedStudentIds.delete(studentId);
+    } else {
+      this.selectedStudentIds.add(studentId);
+    }
+  }  
+
+  selectedBulkGradeValue: string | number = '';
 
   selectedGrades: Set<number> = new Set<number>();
 
-isAnyGradeSelected(): boolean {
-  return this.selectedGrades.size > 0;
-}
-
-toggleGradeSelection(gradeId: number): void {
-  if (this.selectedGrades.has(gradeId)) {
-    this.selectedGrades.delete(gradeId);
-  } else {
-    this.selectedGrades.add(gradeId);
+  isAnyGradeSelected(): boolean {
+    return this.selectedGrades.size > 0;
   }
-}
+
+  toggleGradeSelection(gradeId: number): void {
+    if (this.selectedGrades.has(gradeId)) {
+      this.selectedGrades.delete(gradeId);
+    } else {
+      this.selectedGrades.add(gradeId);
+    }
+  }
+
+  bulkAddToSelected(): void {
+    const value = this.selectedBulkGradeValue;
+  
+    if (this.isGradeInvalid(value)) {
+      alert('Please enter a valid grade between 1 and 10.');
+      return;
+    }
+  
+    for (const cls of this.classes) {
+      for (const student of cls.students) {
+        if (this.selectedStudentIds.has(student.studentId)) {
+          const newGrade: Partial<Grade> = {
+            teacherId: this.teacherId,
+            studentId: student.studentId,
+            classId: cls.classId,
+            value: value,
+            date: new Date().toISOString()
+          };
+  
+          this.userService.addGrade(newGrade).subscribe({
+            next: (response: any) => {
+              student.grades.push(response.grade);
+              console.log(`Added grade to student ${student.name}`);
+            },
+            error: (error) => {
+              console.error('Error adding grade in bulk:', error);
+              this.errorMessage = `Bulk add failed: ${error?.error?.message || 'Unknown error'}`;
+            }
+          });
+        }
+      }
+    }
+  
+    this.selectedBulkGradeValue = '';
+    this.selectedStudentIds.clear();
+  }
+  
 
   ngOnInit(): void {
     this.teacherId = this.userService.getTeacherId(); 
@@ -348,10 +402,12 @@ cancelEditGrade(grade: Grade): void {
   isGradeInvalid(value: string | number | undefined | null): boolean {
     if (value === null || value === undefined || value === '') return true;
   
-    const num = Number(value);
+    const strValue = String(value).trim();
+    const num = Number(strValue);
   
     return isNaN(num) || num < 1 || num > 10 || !Number.isInteger(num);
   }
+  
   
   
   addStudent(index: number, event: Event) {

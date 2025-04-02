@@ -31,6 +31,11 @@
         <div *ngFor="let student of class.students" class="student-card">
           <div class="student-header">
             <h4>{{ student.name }}</h4>
+            <input
+            type="checkbox"
+            [checked]="selectedStudentIds.has(student.studentId)"
+            (change)="toggleStudentSelection(student.studentId)"
+          />
           </div>
 
           <ul class="grades-list">
@@ -92,6 +97,24 @@
           <button class="btn-delete" (click)="bulkDelete()">🗑️ Bulk Delete</button>
           <button class="btn-edit" (click)="bulkEdit()">✏️ Bulk Edit</button>
         </div>
+        
+        <div *ngIf="isAnyStudentSelected()" class="bulk-selected-grade-card">
+          <h4>📝 Bulk Add Grade to Selected</h4>
+          <input
+            type="text"
+            [(ngModel)]="selectedBulkGradeValue"
+            placeholder="Enter grade for selected students"
+            [ngClass]="{'invalid-input': isGradeInvalid(selectedBulkGradeValue)}"
+          />
+          <button
+            class="btn-primary"
+            (click)="bulkAddToSelected()"
+            [disabled]="isGradeInvalid(selectedBulkGradeValue)"
+          >
+            ➕ Apply Grade
+          </button>
+        </div>
+        
         
       </div>
     </div>
