@@ -155,3 +155,41 @@ button:hover {
   border: 1px solid #dc3545;
   background-color: #ffe6e6;
 }
+
+.bulk-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  border-top: 1px solid #ccc;
+  padding-top: 0.5rem;
+}
+.grade-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.grade-value {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.grade-date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.grade-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.grade-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}

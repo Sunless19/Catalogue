@@ -27,6 +27,7 @@
       <div *ngIf="class.expanded" class="students-container">
         <div *ngIf="class.students.length === 0" class="no-students">No students in this class yet.</div>
 
+        
         <div *ngFor="let student of class.students" class="student-card">
           <div class="student-header">
             <h4>{{ student.name }}</h4>
@@ -35,6 +36,13 @@
           <ul class="grades-list">
             <li *ngFor="let grade of student.grades" class="grade-item">
               <ng-container *ngIf="!grade.isEditing">
+                <input
+                type="checkbox"
+                [checked]="selectedGrades.has(grade.id)"
+                (click)="toggleGradeSelection(grade.id); $event.stopPropagation()"
+                class="grade-checkbox"
+              />
+        
                 <span>
                   {{ grade.assignmentName ? grade.assignmentName + ': ' : '' }}
                   <strong>{{ grade.value || 'N/A' }}</strong>
@@ -79,6 +87,12 @@
             </button>
           </div>
         </div>
+
+        <div *ngIf="isAnyGradeSelected()" class="bulk-actions">
+          <button class="btn-delete" (click)="bulkDelete()">🗑️ Bulk Delete</button>
+          <button class="btn-edit" (click)="bulkEdit()">✏️ Bulk Edit</button>
+        </div>
+        
       </div>
     </div>
   </div>

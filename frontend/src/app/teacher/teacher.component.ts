@@ -57,6 +57,21 @@ export class TeacherComponent implements OnInit {
   private editingContext: { classId: number, studentId: number } | null = null;
   constructor(private userService: UserService) {}
 
+
+  selectedGrades: Set<number> = new Set<number>();
+
+isAnyGradeSelected(): boolean {
+  return this.selectedGrades.size > 0;
+}
+
+toggleGradeSelection(gradeId: number): void {
+  if (this.selectedGrades.has(gradeId)) {
+    this.selectedGrades.delete(gradeId);
+  } else {
+    this.selectedGrades.add(gradeId);
+  }
+}
+
   ngOnInit(): void {
     this.teacherId = this.userService.getTeacherId(); 
     if (this.teacherId) {
@@ -216,6 +231,38 @@ startEditGrade(grade: Grade): void {
   grade.isEditing = true;
   grade.editValue = grade.value;
   grade.editDate = grade.date ? new Date(grade.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+}
+
+bulkDelete(): void {
+  if (!confirm(`Are you sure you want to delete ${this.selectedGrades.size} grades?`)) return;
+
+  const gradeIds = Array.from(this.selectedGrades);
+  gradeIds.forEach((id) => {
+    // Găsește studentul care are această notă
+    for (const cls of this.classes) {
+      for (const student of cls.students) {
+        const grade = student.grades.find(g => g.id === id);
+        if (grade) {
+          this.deleteGrade(grade, student); // Refolosim logica existentă
+        }
+      }
+    }
+  });
+
+  this.selectedGrades.clear();
+}
+
+bulkEdit(): void {
+  const gradeIds = Array.from(this.selectedGrades);
+  for (const cls of this.classes) {
+    for (const student of cls.students) {
+      for (const grade of student.grades) {
+        if (gradeIds.includes(grade.id)) {
+          this.startEditGrade(grade);
+        }
+      }
+    }
+  }
 }
 
 
