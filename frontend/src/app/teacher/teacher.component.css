@@ -1,125 +1,157 @@
-.error-message {
-  color: #dc3545; /* Red */
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-  text-align: center;
+.teacher-wrapper {
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.student-list-item {
-  padding: 10px 8px; /* Add more padding */
-  border-bottom: 1px solid #eee; /* Lighter border */
-  background-color: #fff; /* White background for contrast */
-  color: #333;
-  margin-bottom: 5px; /* Space between students */
-  border-radius: 4px; /* Slightly rounded corners */
+.teacher-header {
+  margin-bottom: 1rem;
 }
 
-.student-list-item:last-child {
-  border-bottom: none;
-}
-
-.student-name {
-  font-weight: bold;
-  margin-bottom: 5px; /* Space between name and grades */
-}
-
-.grades-list {
-  list-style-type: none;
-  padding-left: 15px; /* Indent grades */
-  margin-top: 5px;
-  font-size: 0.9em; /* Slightly smaller font for grades */
-}
-
-.grade-item {
-  color: #555; /* Darker grey for grades */
-  padding: 2px 0;
-}
-
-.no-grades, .loading-grades-student, .no-students {
-  font-style: italic;
-  color: #888;
-  padding: 5px 0;
-  font-size: 0.9em;
-}
-
-.add-student-form {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #e9ecef; /* Light background for the form */
-  border-radius: 6px;
+.class-list-wrapper {
   display: flex;
-  gap: 5px; /* Space between input and buttons */
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.add-student-form input {
-  flex-grow: 1; /* Input takes available space */
-  padding: 8px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-}
-
-.add-student-form button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: #28a745; /* Green for Add */
-  color: white;
-  transition: background-color 0.2s ease;
-}
-
-.add-student-form button:hover {
-   background-color: #218838;
-}
-
-.add-student-form button:last-of-type { /* Style for Cancel button */
-  background-color: #6c757d; /* Grey for Cancel */
-}
-.add-student-form button:last-of-type:hover {
-  background-color: #5a6268;
-}
-
-
-/* Adjust existing styles if needed */
-.class-list li {
-  background: #eef; /* Lighter background for class item overall */
-  color: #333; /* Darker text */
-  padding: 0; /* Remove padding, header/content will have it */
+.class-card {
+  background: #f7f9fc;
+  border: 1px solid #dce3ec;
   border-radius: 8px;
-  margin-bottom: 15px; /* More space between classes */
-  cursor: default; /* Default cursor, header is clickable */
-  text-align: left; /* Align text left */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Subtle shadow */
-  transition: box-shadow 0.3s ease;
+  padding: 1rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
 }
 
-.class-list li:hover {
-   box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Slightly larger shadow on hover */
+.class-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .class-header {
-  /* Keep existing styles */
-  background: #007bff; /* Blue background for header */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-student-input {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.students-container {
+  margin-top: 1rem;
+}
+
+.student-card {
+  padding: 1rem;
+  border: 1px solid #cdd8e0;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  background-color: #fff;
+}
+
+.grade-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0;
+}
+
+.grade-actions button {
+  margin-left: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.grade-actions button:hover {
+  color: #007bff;
+}
+
+.edit-grade-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.add-grade-form {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.no-grades, .no-students, .no-classes {
+  font-style: italic;
+  color: #888;
+  margin-top: 0.5rem;
+}
+
+/* Stil general pentru butoane */
+button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button:hover {
+  transform: scale(1.03);
+}
+
+/* Buton primar (Add, Submit) */
+.btn-primary {
+  background-color: #007bff;
   color: white;
-  padding: 12px 15px;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  cursor: pointer; /* Make header clickable for toggle */
 }
 
-/* Ensure expanded content doesn't have the blue background */
-.student-list {
-   background: transparent; /* Remove grey background */
-   padding: 10px 15px 15px 15px; /* Padding around student list */
-   margin-top: 0;
-   border-bottom-left-radius: 8px; /* Match parent rounding */
-   border-bottom-right-radius: 8px;
+.btn-primary:hover {
+  background-color: #0069d9;
 }
 
-/* Prevent clicks inside student list from toggling class */
-.student-list li, .add-student-form {
-  cursor: default;
+/* Buton secundar (Cancel, simple actions) */
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+/* Buton pentru edit */
+.btn-edit {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+}
+
+/* Buton de ștergere */
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+}
+
+/* Buton salvare */
+.btn-save {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-save:hover {
+  background-color: #218838;
+}
+
+.invalid-input {
+  border: 1px solid #dc3545;
+  background-color: #ffe6e6;
 }

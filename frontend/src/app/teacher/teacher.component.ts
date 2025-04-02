@@ -116,7 +116,7 @@ addGrade(studentId: number, classId: number) {
   };
 
   this.userService.addGrade(newGrade).subscribe({
-    next: (response) => {
+    next: (response: any) => {
       console.log('Grade added successfully:', response);
 
       // Find the student and update their grades list
@@ -124,7 +124,7 @@ addGrade(studentId: number, classId: number) {
         if (cls.classId === classId) {
           for (const student of cls.students) {
             if (student.studentId === studentId) {
-              student.grades.push(response);
+              student.grades.push(response.grade);
               break;
             }
           }
@@ -280,6 +280,33 @@ cancelEditGrade(grade: Grade): void {
     this.classes[index].showInput = true;
   }
 
+  deleteGrade(grade: Grade, student: Student): void {
+    if (!grade.id) return;
+  
+    if (!confirm('Are you sure you want to delete this grade?')) return;
+  
+    this.userService.deleteGrade(grade.id).subscribe({
+      next: () => {
+        console.log('Grade deleted successfully');
+  
+        student.grades = student.grades.filter(g => g.id !== grade.id);
+      },
+      error: (error) => {
+        console.error('Error deleting grade:', error);
+        this.errorMessage = `Error deleting grade: ${error?.error?.message || 'Unknown error'}`;
+      }
+    });
+  }
+  
+  isGradeInvalid(value: string | number | undefined | null): boolean {
+    if (value === null || value === undefined || value === '') return true;
+  
+    const num = Number(value);
+  
+    return isNaN(num) || num < 1 || num > 10 || !Number.isInteger(num);
+  }
+  
+  
   addStudent(index: number, event: Event) {
     event.stopPropagation();
 
