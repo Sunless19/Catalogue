@@ -1,6 +1,5 @@
 
 export interface Grade {
-  gradeId: number;
   teacherId: number | null;
   value: string | number; 
   studentName: string; 
@@ -143,6 +142,7 @@ addGrade(studentId: number, classId: number) {
 
 
   fetchAndProcessGrades(): void {
+
     if (!this.teacherId) {
         console.error("Cannot fetch grades without teacherId");
         return;
@@ -171,6 +171,7 @@ addGrade(studentId: number, classId: number) {
     const gradeMap = new Map<number, Map<number, Grade[]>>(); // Use classId & studentId as keys
 
     for (const grade of grades) {
+
         if (!grade.classId || !grade.studentId) {
             console.warn("Skipping grade due to missing classId or studentId:", grade);
             continue;
@@ -225,47 +226,45 @@ cancelEditGrade(grade: Grade): void {
 }
 
 
-saveEditGrade(grade: Grade): void {
+  saveEditGrade(grade: Grade): void {
 
-  console.log('Saving grade:', grade.gradeId);
-  if (!grade.gradeId) {
-    console.error('Error: gradeId is missing or undefined.', grade);
-    this.errorMessage = 'Cannot update grade: Missing gradeId.';
-    return;
-  }
-
-  if (!grade.editValue) {
-    console.warn('Grade value cannot be empty.');
-    return;
-  }
-
-  const updatePayload: Partial<Grade> = {
-    value: grade.editValue,
-    date: new Date(grade.editDate!).toISOString()
-  };
-
-  console.log('Updating grade:', grade.gradeId, updatePayload);
-
-  this.userService.updateGrade(grade.gradeId, updatePayload).subscribe({
-    next: (updatedGrade) => {
-      console.log('Grade updated successfully:', updatedGrade);
-
-      // Update the local grade
-      grade.value = updatedGrade.value;
-      grade.date = updatedGrade.date;
-
-      // Exit edit mode
-      this.cancelEditGrade(grade);
-    },
-    error: (error) => {
-      console.error('Error updating grade:', error);
-      this.errorMessage = `Error updating grade: ${error?.error?.message || 'Unknown error'}`;
+    console.log('Saving grade:', grade.id);
+    if (!grade.id) {
+      console.error('Error: id is missing or undefined.', grade);
+      this.errorMessage = 'Cannot update grade: Missing id.';
+      return;
     }
-  });
-}
 
+    if (!grade.editValue) {
+      console.warn('Grade value cannot be empty.');
+      return;
+    }
 
+    const updatePayload: Partial<Grade> = {
+      value: grade.editValue,
+      date: new Date(grade.editDate!).toISOString()
+    };
 
+    console.log('Updating grade:', grade.id, updatePayload);
+
+    this.userService.updateGrade(grade.id, updatePayload).subscribe({
+      next: (res: any) => {
+        console.log('Grade updated successfully:', res.grade);
+
+        grade.value = res.grade.value;
+        grade.date = res.grade.date;
+
+        this.cancelEditGrade(grade);
+
+        console.log(grade)
+        
+      },
+      error: (error) => {
+        console.error('Error updating grade:', error);
+        this.errorMessage = `Error updating grade: ${error?.error?.message || 'Unknown error'}`;
+      }
+    });
+  }
 
   toggleClass(index: number, event: Event) {
     const target = event.target as HTMLElement;

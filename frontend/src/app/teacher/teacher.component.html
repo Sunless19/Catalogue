@@ -1,101 +1,102 @@
-<div class="full-page-wrapper">
-  <div class="teacher-container">
-    <h2>My Classes</h2>
+  <div class="full-page-wrapper">
+    <div class="teacher-container">
+      <h2>My Classes</h2>
 
-    <!-- Loading Indicators -->
-    <div *ngIf="isLoadingClasses">Loading classes...</div>
-    <div *ngIf="isLoadingGrades && !isLoadingClasses">Loading grades...</div>
+      <!-- Loading Indicators -->
+      <div *ngIf="isLoadingClasses">Loading classes...</div>
+      <div *ngIf="isLoadingGrades && !isLoadingClasses">Loading grades...</div>
 
-    <!-- Error Message -->
-    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-    <!-- Class List -->
-    <ul class="class-list" *ngIf="!isLoadingClasses && classes.length > 0">
-      <li *ngFor="let class of classes; let i = index" (click)="toggleClass(i, $event)">
+      <!-- Class List -->
+      <ul class="class-list" *ngIf="!isLoadingClasses && classes.length > 0">
+        <li *ngFor="let class of classes; let i = index" (click)="toggleClass(i, $event)">
 
-        <!-- Class Header (Name and Add Button) -->
-        <div class="class-header">
-          <span>{{ class.name }}</span>
-          <button
-            *ngIf="!class.showInput"
-            class="add-student-btn"
-            (click)="showInputField(i, $event)"
-            title="Add Student"
-          >+</button>
-        </div>
+          <!-- Class Header (Name and Add Button) -->
+          <div class="class-header">
+            <span>{{ class.name }}</span>
+            <button
+              *ngIf="!class.showInput"
+              class="add-student-btn"
+              (click)="showInputField(i, $event)"
+              title="Add Student"
+            >+</button>
+          </div>
 
-        <!-- Add Student Input Form -->
-        <div *ngIf="class.showInput" class="add-student-form" (click)="$event.stopPropagation()">
-           <input
-              type="text"
-              [(ngModel)]="class.newStudentName"
-              placeholder="New student name"
-              (keyup.enter)="addStudent(i, $event)"
-              (click)="$event.stopPropagation()"
-            />
-            <button (click)="addStudent(i, $event)" (click)="$event.stopPropagation()">Add</button>
-            <button (click)="class.showInput = false; $event.stopPropagation()">Cancel</button>
-        </div>
+          <!-- Add Student Input Form -->
+          <div *ngIf="class.showInput" class="add-student-form" (click)="$event.stopPropagation()">
+            <input
+                type="text"
+                [(ngModel)]="class.newStudentName"
+                placeholder="New student name"
+                (keyup.enter)="addStudent(i, $event)"
+                (click)="$event.stopPropagation()"
+              />
+              <button (click)="addStudent(i, $event)" (click)="$event.stopPropagation()">Add</button>
+              <button (click)="class.showInput = false; $event.stopPropagation()">Cancel</button>
+          </div>
 
 
-        <!-- Student List (Shown when expanded) -->
-        <div *ngIf="class.expanded">
-          <ul class="student-list">
-            <li *ngIf="class.students.length === 0" class="no-students">No students in this class yet.</li>
+          <!-- Student List (Shown when expanded) -->
+          <div *ngIf="class.expanded">
+            <ul class="student-list">
+              <li *ngIf="class.students.length === 0" class="no-students">No students in this class yet.</li>
 
-            <!-- Iterate over Student Objects -->
-            <li *ngFor="let student of class.students" class="student-list-item">
-              <div class="student-name">{{ student.name }}</div>
-            
-              <!-- Grades List -->
-              <ul class="grades-list" *ngIf="student.grades.length > 0">
-                <li *ngFor="let grade of student.grades" class="grade-item">
-
-                  <ng-container *ngIf="!grade.isEditing">
-                    <span>
-                      {{ grade.assignmentName ? grade.assignmentName + ': ' : '' }}{{ grade.value }}
-                      <span class="grade-date" *ngIf="grade.date"> ({{ grade.date | date:'shortDate' }})</span>
-                    </span>
-                    <button class="edit-grade-btn" (click)="startEditGrade(grade); $event.stopPropagation()">Edit</button>
-                  </ng-container>
-                  
-                  <!-- Edit Mode -->
-                  <ng-container *ngIf="grade.isEditing">
-                    <div class="edit-grade-form" (click)="$event.stopPropagation()">
-                      <input type="text" [(ngModel)]="grade.editValue" placeholder="Grade value" />
-                      <input type="date" [(ngModel)]="grade.editDate" />
-                      <button (click)="saveEditGrade(grade)">Save</button>
-                      <button (click)="cancelEditGrade(grade)">Cancel</button>
-                    </div>
-                  </ng-container>
-
-                </li>
-              </ul>
-            
-              <div *ngIf="student.grades.length === 0 && !isLoadingGrades" class="no-grades">
-                No grades recorded yet.
-              </div>
-            
-              <!-- Add New Grade Form -->
-              <div class="add-grade-form">
-                <input
-                  type="text"
-                  [(ngModel)]="newGradeValues[student.studentId]"
-                  placeholder="Enter grade"
-                />
-                <button (click)="addGrade(student.studentId, class.classId)">Submit</button>
-              </div>
+              <!-- Iterate over Student Objects -->
+              <li *ngFor="let student of class.students" class="student-list-item">
+                <div class="student-name">{{ student.name }}</div>
               
-            </li>
-          </ul>
-        </div>
-      </li>
-    </ul>
+                <!-- Grades List -->
+                <ul class="grades-list" *ngIf="student.grades.length > 0">
+                  <li *ngFor="let grade of student.grades" class="grade-item">
 
-    <!-- Message if no classes are found -->
-    <div *ngIf="!isLoadingClasses && classes.length === 0 && !errorMessage">
-      You are not currently assigned to any classes.
+                    <ng-container *ngIf="!grade.isEditing">
+                      <span>
+                        {{ grade.assignmentName ? grade.assignmentName + ': ' : '' }}{{ grade.value || 'N/A' }}
+
+                        <span class="grade-date" *ngIf="grade.date"> ({{ grade.date | date:'shortDate' }})</span>
+                      </span>
+                      <button class="edit-grade-btn" (click)="startEditGrade(grade); $event.stopPropagation()">Edit</button>
+                    </ng-container>
+                    
+                    <!-- Edit Mode -->
+                    <ng-container *ngIf="grade.isEditing">
+                      <div class="edit-grade-form" (click)="$event.stopPropagation()">
+                        <input type="text" [(ngModel)]="grade.editValue" placeholder="Grade value" />
+                        <input type="date" [(ngModel)]="grade.editDate" />
+                        <button (click)="saveEditGrade(grade)">Save</button>
+                        <button (click)="cancelEditGrade(grade)">Cancel</button>
+                      </div>
+                    </ng-container>
+
+                  </li>
+                </ul>
+              
+                <div *ngIf="student.grades.length === 0 && !isLoadingGrades" class="no-grades">
+                  No grades recorded yet.
+                </div>
+              
+                <!-- Add New Grade Form -->
+                <div class="add-grade-form">
+                  <input
+                    type="text"
+                    [(ngModel)]="newGradeValues[student.studentId]"
+                    placeholder="Enter grade"
+                  />
+                  <button (click)="addGrade(student.studentId, class.classId)">Submit</button>
+                </div>
+                
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Message if no classes are found -->
+      <div *ngIf="!isLoadingClasses && classes.length === 0 && !errorMessage">
+        You are not currently assigned to any classes.
+      </div>
+
     </div>
-
   </div>
-</div>
