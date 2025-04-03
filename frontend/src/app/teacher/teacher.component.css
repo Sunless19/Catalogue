@@ -247,3 +247,28 @@ input[type="checkbox"] {
   height: 20px;
   cursor: pointer;
 }
+
+.sort-button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px; /* Adds some spacing */
+}
+
+.sort-button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px; /* Adds some spacing */
+}
+
+.sort-button {
+  background-color: #007bff;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+
+.sort-button:hover {
+  background-color: #0056b3;
+}

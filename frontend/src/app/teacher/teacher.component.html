@@ -43,6 +43,11 @@
           />
           </div>
 
+          <div class="sort-button-wrapper">
+            <button class="btn-filter sort-button">
+              📅 Sort by Date
+            </button>
+          </div>
           <ul class="grades-list">
             <li *ngFor="let grade of student.grades" class="grade-item">
               <ng-container *ngIf="!grade.isEditing">
