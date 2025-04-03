@@ -1,4 +1,5 @@
-﻿using Catalog.Models;
+﻿using Catalog.Dtos;
+using Catalog.Models;
 using Catalog.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,6 +16,25 @@ namespace Catalog.Controllers
         public GradeController(GradeService gradeService)
         {
             _gradeService = gradeService;
+        }
+
+        [HttpPost("add-multiple")]
+        public async Task<IActionResult> AddMultipleGrades([FromBody] MultipleGradesRequest request)
+        {
+            if (request == null || request.Grades == null || !request.Grades.Any())
+                return BadRequest("Invalid request: No grades provided");
+
+            try
+            {
+                var addedGrades = await _gradeService.AddMultipleGradesAsync(
+                    request.TeacherId, request.StudentId, request.ClassId, request.Grades);
+
+                return Ok(new { Message = "Grades added successfully", Grades = addedGrades });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
         }
 
         [HttpPost("POST")]

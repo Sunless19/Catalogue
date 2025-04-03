@@ -38,17 +38,17 @@ export class UserService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  getTeacherId(): number | null {
+  getTeacherId(): number | 0 {
     const token = this.getToken();
-    if (!token) return null;
+    if (!token) return 0;
 
     try {
       const decoded = jwtDecode<JwtPayload>(token);
       const userId = parseInt(decoded.nameid, 10);
-      return !isNaN(userId) ? userId : null;
+      return !isNaN(userId) ? userId : 0;
     } catch (err) {
       console.error('Invalid token or missing ID claim', err);
-      return null;
+      return 0;
     }
   }
 
@@ -127,7 +127,30 @@ export class UserService {
         return throwError(() => err);
       })
     );
+  } 
+
+  addMultipleGrades(teacherId: number, studentId: number, classId: number, grades: { value: number; date: string }[]): Observable<any> {
+    const headers = this.getAuthHeaders();
+    if (!headers.has('Authorization')) {
+      return throwError(() => new Error('Authorization header missing'));
+    }
+  
+    const payload = {
+      TeacherId: teacherId,
+      StudentId: studentId,
+      ClassId: classId,
+      Grades: grades
+    };
+  
+    return this.http.post<any>(`${this.gradeApiUrl}/add-multiple`, payload, { headers }).pipe(
+      tap(response => console.log('Added multiple grades successfully:', response)),
+      catchError(err => {
+        console.error('Error adding multiple grades:', err);
+        return throwError(() => err);
+      })
+    );
   }
+  
 
   // New methods for grade operations
   addGrade(gradeData: Partial<Grade>): Observable<Grade> {

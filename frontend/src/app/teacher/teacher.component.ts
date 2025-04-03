@@ -45,7 +45,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class TeacherComponent implements OnInit {
   classes: Class[] = [];
-  teacherId: number | null = null;
+
+  teacherId: number=0 ; 
+
   isLoadingClasses = false;
   isLoadingGrades = false;
   errorMessage: string | null = null;
@@ -56,7 +58,12 @@ export class TeacherComponent implements OnInit {
   editingGradeDate: string = '';
   // Store context for updating the local array after save
   private editingContext: { classId: number, studentId: number } | null = null;
-  constructor(private userService: UserService) { }
+
+  multipleGradesMode: { [studentId: number]: boolean } = {};
+  multipleGradesValues: { [studentId: number]: string } = {};
+
+  constructor(private userService: UserService) {}
+
 
   selectedStudentIds: Set<number> = new Set<number>();
 
@@ -211,6 +218,70 @@ export class TeacherComponent implements OnInit {
     });
   }
 
+  addMultipleGrades(studentId: number, classId: number): void {
+  const gradesInput = this.multipleGradesValues[studentId];
+  
+  if (!gradesInput || gradesInput.trim() === '') {
+    console.warn('Grades values are required.');
+    return;
+  }
+  
+  // Parse comma-separated grades
+  const gradeValues = gradesInput.split(',')
+    .map(g => g.trim())
+    .filter(g => g !== '');
+  
+  // Validate each grade
+  for (const value of gradeValues) {
+    if (this.isGradeInvalid(value)) {
+      alert(`Invalid grade value: ${value}. All grades must be integers between 1 and 10.`);
+      return;
+    }
+  }
+  
+  // Create grades array for API
+  const grades = gradeValues.map(value => ({
+    value: parseInt(value),
+    date: new Date().toISOString()
+  }));
+  
+  // Call the service method
+  this.userService.addMultipleGrades(this.teacherId, studentId, classId, grades).subscribe({
+    next: (response: any) => {
+      console.log('Multiple grades added successfully:', response);
+      
+      // Find the student and update their grades list
+      for (const cls of this.classes) {
+        if (cls.classId === classId) {
+          for (const student of cls.students) {
+            if (student.studentId === studentId) {
+              // Add all the new grades to the student's grades array
+              if (response.grades && Array.isArray(response.grades)) {
+                student.grades = [...student.grades, ...response.grades];
+              }
+              break;
+            }
+          }
+        }
+      }
+      
+      // Reset inputs
+      this.multipleGradesValues[studentId] = '';
+      this.multipleGradesMode[studentId] = false;
+    },
+    error: (error) => {
+      console.error('Error adding multiple grades:', error);
+      this.errorMessage = `Error adding multiple grades: ${error?.error?.message || 'Unknown error'}`;
+    }
+  });
+}
+
+toggleMultipleGradesMode(studentId: number): void {
+  this.multipleGradesMode[studentId] = !this.multipleGradesMode[studentId];
+  if (this.multipleGradesMode[studentId]) {
+    this.multipleGradesValues[studentId] = '';
+  }
+}
 
   fetchAndProcessGrades(): void {
 

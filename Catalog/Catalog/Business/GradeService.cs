@@ -1,4 +1,5 @@
 ﻿using Catalog.AppDBContext;
+using Catalog.Dtos;
 using Catalog.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,6 +20,23 @@ namespace Catalog.Services
             return await _context.Grades
                 .Where(g => g.TeacherId == teacherId)
                 .ToListAsync();
+        }
+
+        public async Task<List<Grade>> AddMultipleGradesAsync(int teacherId, int studentId, int classId, List<GradeEntry> grades)
+        {
+            var newGrades = grades.Select(g => new Grade
+            {
+                Value = g.Value,
+                Date = g.Date,
+                StudentId = studentId,
+                ClassId = classId,
+                TeacherId = teacherId
+            }).ToList();
+
+            _context.Grades.AddRange(newGrades);
+            await _context.SaveChangesAsync();
+
+            return newGrades;
         }
 
         public async Task<Grade> AddGradeAsync(int teacherId, int studentId, int classId, double value, DateTime date)
