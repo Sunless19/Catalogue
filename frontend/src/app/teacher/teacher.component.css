@@ -32,6 +32,14 @@
   align-items: center;
 }
 
+.class-header h3 {
+  margin-right: auto;
+}
+
+.class-header button {
+  margin-left: 8px;
+}
+
 .add-student-input {
   display: flex;
   gap: 0.5rem;

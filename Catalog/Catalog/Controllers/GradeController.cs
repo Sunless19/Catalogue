@@ -64,7 +64,7 @@ namespace Catalog.Controllers
             {
                 var grades = await _gradeService.GetGradesByTeacherAsync(teacherId);
 
-                if (grades == null || grades.Count == 0)
+                if (grades == null)
                     return NotFound("No grades found for this teacher");
 
                 return Ok(grades);

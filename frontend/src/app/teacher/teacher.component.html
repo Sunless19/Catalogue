@@ -10,17 +10,22 @@
     <div *ngFor="let class of classes; let i = index" class="class-card" (click)="toggleClass(i, $event)">
       <div class="class-header">
         <h3>{{ class.name }}</h3>
-        <button *ngIf="!class.showInput" (click)="showInputField(i, $event)">➕</button>
+        <div class="class-actions">
+          <button *ngIf="!class.showInput" (click)="showInputField(i, $event, 'add')">➕</button>
+          <button *ngIf="!class.showInput" (click)="showInputField(i, $event, 'delete')">➖</button>
+        </div>
       </div>
 
       <div *ngIf="class.showInput" class="add-student-input" (click)="$event.stopPropagation()">
         <input
           type="text"
           [(ngModel)]="class.newStudentName"
-          placeholder="New student name"
-          (keyup.enter)="addStudent(i, $event)"
+          [placeholder]="class.inputMode === 'add' ? 'New student name' : 'Student name'"
+          (keyup.enter)="class.inputMode === 'add' ? addStudent(i, $event) : deleteStudent(i, $event)"
         />
-        <button (click)="addStudent(i, $event)">Add</button>
+        <button (click)="class.inputMode === 'add' ? addStudent(i, $event) : deleteStudent(i, $event)">
+          {{ class.inputMode === 'add' ? 'Add' : 'Delete' }}
+        </button>
         <button (click)="class.showInput = false">Cancel</button>
       </div>
 
