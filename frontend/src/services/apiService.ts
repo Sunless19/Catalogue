@@ -127,7 +127,30 @@ export class UserService {
         return throwError(() => err);
       })
     );
+  } 
+
+  addMultipleGrades(teacherId: number, studentId: number, classId: number, grades: { value: number; date: string }[]): Observable<any> {
+    const headers = this.getAuthHeaders();
+    if (!headers.has('Authorization')) {
+      return throwError(() => new Error('Authorization header missing'));
+    }
+  
+    const payload = {
+      TeacherId: teacherId,
+      StudentId: studentId,
+      ClassId: classId,
+      Grades: grades
+    };
+  
+    return this.http.post<any>(`${this.gradeApiUrl}/add-multiple`, payload, { headers }).pipe(
+      tap(response => console.log('Added multiple grades successfully:', response)),
+      catchError(err => {
+        console.error('Error adding multiple grades:', err);
+        return throwError(() => err);
+      })
+    );
   }
+  
 
   // New methods for grade operations
   addGrade(gradeData: Partial<Grade>): Observable<Grade> {
