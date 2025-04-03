@@ -1,15 +1,15 @@
 
 export interface Grade {
   teacherId: number | null;
-  value: string | number; 
-  studentName: string; 
-  className: string;   
+  value: string | number;
+  studentName: string;
+  className: string;
   assignmentName?: string;
   classId?: number;
   studentId: number;
   date?: string;
   isEditing?: boolean;
-  editValue?: string | number; 
+  editValue?: string | number;
   editDate?: string;
   id: number;
 }
@@ -17,7 +17,7 @@ export interface Grade {
 export interface Student {
   name: string;
   grades: Grade[];
-  studentId: number; 
+  studentId: number;
 }
 
 export interface Class {
@@ -41,11 +41,13 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './teacher.component.html',
-  styleUrls: ['./teacher.component.css'] 
+  styleUrls: ['./teacher.component.css']
 })
 export class TeacherComponent implements OnInit {
   classes: Class[] = [];
+
   teacherId: number=0 ; 
+
   isLoadingClasses = false;
   isLoadingGrades = false;
   errorMessage: string | null = null;
@@ -56,10 +58,12 @@ export class TeacherComponent implements OnInit {
   editingGradeDate: string = '';
   // Store context for updating the local array after save
   private editingContext: { classId: number, studentId: number } | null = null;
+
   multipleGradesMode: { [studentId: number]: boolean } = {};
   multipleGradesValues: { [studentId: number]: string } = {};
 
   constructor(private userService: UserService) {}
+
 
   selectedStudentIds: Set<number> = new Set<number>();
 
@@ -67,14 +71,14 @@ export class TeacherComponent implements OnInit {
     return this.selectedStudentIds.size > 0;
   }
 
-  
+
   toggleStudentSelection(studentId: number): void {
     if (this.selectedStudentIds.has(studentId)) {
       this.selectedStudentIds.delete(studentId);
     } else {
       this.selectedStudentIds.add(studentId);
     }
-  }  
+  }
 
   selectedBulkGradeValue: string | number = '';
 
@@ -94,12 +98,12 @@ export class TeacherComponent implements OnInit {
 
   bulkAddToSelected(): void {
     const value = this.selectedBulkGradeValue;
-  
+
     if (this.isGradeInvalid(value)) {
       alert('Please enter a valid grade between 1 and 10.');
       return;
     }
-  
+
     for (const cls of this.classes) {
       for (const student of cls.students) {
         if (this.selectedStudentIds.has(student.studentId)) {
@@ -110,7 +114,7 @@ export class TeacherComponent implements OnInit {
             value: value,
             date: new Date().toISOString()
           };
-  
+
           this.userService.addGrade(newGrade).subscribe({
             next: (response: any) => {
               student.grades.push(response.grade);
@@ -124,14 +128,14 @@ export class TeacherComponent implements OnInit {
         }
       }
     }
-  
+
     this.selectedBulkGradeValue = '';
     this.selectedStudentIds.clear();
   }
-  
+
 
   ngOnInit(): void {
-    this.teacherId = this.userService.getTeacherId(); 
+    this.teacherId = this.userService.getTeacherId();
     if (this.teacherId) {
       console.log('Teacher ID found:', this.teacherId);
       this.fetchClasses();
@@ -147,72 +151,72 @@ export class TeacherComponent implements OnInit {
     this.isLoadingClasses = true;
     this.errorMessage = null;
     this.userService.getClasses().subscribe({
-        next: (data) => {
-            console.log('Raw classes data:', data);
-            this.classes = data.map((classItem: any): Class => ({
-                name: classItem.name,
-                userId: classItem.userId,
-                classId: classItem.id, // Include classId for proper mapping
-                students: (classItem.students || []).map((student: any): Student => ({
-                    name: student.studentName, // Correctly map student names
-                    studentId: student.studentId, // Include studentId for grade linking
-                    grades: []
-                })),
-                expanded: false,
-                showInput: false,
-                newStudentName: '',
-                inputMode:''
-            }));
-            console.log('Processed classes:', this.classes);
-            this.isLoadingClasses = false;
-            this.fetchAndProcessGrades();
-        },
-        error: (error) => {
-            console.error('Error fetching classes:', error);
-            this.errorMessage = 'Failed to load classes. Please try again later.';
-            this.isLoadingClasses = false;
-        }
+      next: (data) => {
+        console.log('Raw classes data:', data);
+        this.classes = data.map((classItem: any): Class => ({
+          name: classItem.name,
+          userId: classItem.userId,
+          classId: classItem.id, // Include classId for proper mapping
+          students: (classItem.students || []).map((student: any): Student => ({
+            name: student.studentName, // Correctly map student names
+            studentId: student.studentId, // Include studentId for grade linking
+            grades: []
+          })),
+          expanded: false,
+          showInput: false,
+          newStudentName: '',
+          inputMode: ''
+        }));
+        console.log('Processed classes:', this.classes);
+        this.isLoadingClasses = false;
+        this.fetchAndProcessGrades();
+      },
+      error: (error) => {
+        console.error('Error fetching classes:', error);
+        this.errorMessage = 'Failed to load classes. Please try again later.';
+        this.isLoadingClasses = false;
+      }
     });
-}
-
-addGrade(studentId: number, classId: number) {
-  if (!this.newGradeValues[studentId]) {
-    console.warn('Grade value is required.');
-    return;
   }
 
-  const newGrade: Partial<Grade> = {
-    teacherId: this.teacherId,
-    studentId: studentId,
-    classId: classId,
-    value: this.newGradeValues[studentId],
-    date: new Date().toISOString()
-  };
+  addGrade(studentId: number, classId: number) {
+    if (!this.newGradeValues[studentId]) {
+      console.warn('Grade value is required.');
+      return;
+    }
 
-  this.userService.addGrade(newGrade).subscribe({
-    next: (response: any) => {
-      console.log('Grade added successfully:', response);
+    const newGrade: Partial<Grade> = {
+      teacherId: this.teacherId,
+      studentId: studentId,
+      classId: classId,
+      value: this.newGradeValues[studentId],
+      date: new Date().toISOString()
+    };
 
-      // Find the student and update their grades list
-      for (const cls of this.classes) {
-        if (cls.classId === classId) {
-          for (const student of cls.students) {
-            if (student.studentId === studentId) {
-              student.grades.push(response.grade);
-              break;
+    this.userService.addGrade(newGrade).subscribe({
+      next: (response: any) => {
+        console.log('Grade added successfully:', response);
+
+        // Find the student and update their grades list
+        for (const cls of this.classes) {
+          if (cls.classId === classId) {
+            for (const student of cls.students) {
+              if (student.studentId === studentId) {
+                student.grades.push(response.grade);
+                break;
+              }
             }
           }
         }
-      }
 
-      this.newGradeValues[studentId] = ''; // Reset input field for that student
-    },
-    error: (error) => {
-      console.error('Error adding grade:', error);
-      this.errorMessage = `Error adding grade: ${error?.error?.message || 'Unknown error'}`;
-    }
-  });
-}
+        this.newGradeValues[studentId] = ''; // Reset input field for that student
+      },
+      error: (error) => {
+        console.error('Error adding grade:', error);
+        this.errorMessage = `Error adding grade: ${error?.error?.message || 'Unknown error'}`;
+      }
+    });
+  }
 
   addMultipleGrades(studentId: number, classId: number): void {
   const gradesInput = this.multipleGradesValues[studentId];
@@ -282,26 +286,26 @@ toggleMultipleGradesMode(studentId: number): void {
   fetchAndProcessGrades(): void {
 
     if (!this.teacherId) {
-        console.error("Cannot fetch grades without teacherId");
-        return;
+      console.error("Cannot fetch grades without teacherId");
+      return;
     }
     if (this.classes.length === 0) {
-        console.log("No classes found, skipping grade fetching.");
-        return;
+      console.log("No classes found, skipping grade fetching.");
+      return;
     }
 
     this.isLoadingGrades = true;
     this.userService.getGradesByTeacher(this.teacherId).subscribe({
-        next: (gradesData) => {
-            console.log('Fetched grades data:', gradesData);
-            this.processGrades(gradesData);
-            this.isLoadingGrades = false;
-        },
-        error: (error) => {
-            console.error('Error fetching grades:', error);
-            this.errorMessage = 'Failed to load grades. Grades data might be incomplete.';
-            this.isLoadingGrades = false;
-        }
+      next: (gradesData) => {
+        console.log('Fetched grades data:', gradesData);
+        this.processGrades(gradesData);
+        this.isLoadingGrades = false;
+      },
+      error: (error) => {
+        console.error('Error fetching grades:', error);
+        this.errorMessage = 'Failed to load grades. Grades data might be incomplete.';
+        this.isLoadingGrades = false;
+      }
     });
   }
 
@@ -310,90 +314,90 @@ toggleMultipleGradesMode(studentId: number): void {
 
     for (const grade of grades) {
 
-        if (!grade.classId || !grade.studentId) {
-            console.warn("Skipping grade due to missing classId or studentId:", grade);
-            continue;
-        }
+      if (!grade.classId || !grade.studentId) {
+        console.warn("Skipping grade due to missing classId or studentId:", grade);
+        continue;
+      }
 
-        if (!gradeMap.has(grade.classId)) {
-            gradeMap.set(grade.classId, new Map<number, Grade[]>());
-        }
+      if (!gradeMap.has(grade.classId)) {
+        gradeMap.set(grade.classId, new Map<number, Grade[]>());
+      }
 
-        const classGradeMap = gradeMap.get(grade.classId)!;
+      const classGradeMap = gradeMap.get(grade.classId)!;
 
-        if (!classGradeMap.has(grade.studentId)) {
-            classGradeMap.set(grade.studentId, []);
-        }
+      if (!classGradeMap.has(grade.studentId)) {
+        classGradeMap.set(grade.studentId, []);
+      }
 
-        classGradeMap.get(grade.studentId)!.push(grade);
+      classGradeMap.get(grade.studentId)!.push(grade);
     }
 
     console.log("Processed grade map:", gradeMap);
 
     for (const cls of this.classes) {
-        const classGradeMap = gradeMap.get(cls.classId);
-        if (classGradeMap) {
-            for (const student of cls.students) {
-                const studentGrades = classGradeMap.get(student.studentId);
-                student.grades = studentGrades ? studentGrades : [];
-            }
-        } else {
-            for (const student of cls.students) {
-                student.grades = [];
-            }
+      const classGradeMap = gradeMap.get(cls.classId);
+      if (classGradeMap) {
+        for (const student of cls.students) {
+          const studentGrades = classGradeMap.get(student.studentId);
+          student.grades = studentGrades ? studentGrades : [];
         }
-    }
-    console.log("Classes after grade processing:", this.classes);
-}
-
-startEditGrade(grade: Grade): void {
-  console.log('Editing grade:', grade);
-
-  this.cancelEditGrade(grade);
-
-  grade.isEditing = true;
-  grade.editValue = grade.value;
-  grade.editDate = grade.date ? new Date(grade.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
-}
-
-bulkDelete(): void {
-  if (!confirm(`Are you sure you want to delete ${this.selectedGrades.size} grades?`)) return;
-
-  const gradeIds = Array.from(this.selectedGrades);
-  gradeIds.forEach((id) => {
-    // Găsește studentul care are această notă
-    for (const cls of this.classes) {
-      for (const student of cls.students) {
-        const grade = student.grades.find(g => g.id === id);
-        if (grade) {
-          this.deleteGrade(grade, student); // Refolosim logica existentă
+      } else {
+        for (const student of cls.students) {
+          student.grades = [];
         }
       }
     }
-  });
+    console.log("Classes after grade processing:", this.classes);
+  }
 
-  this.selectedGrades.clear();
-}
+  startEditGrade(grade: Grade): void {
+    console.log('Editing grade:', grade);
 
-bulkEdit(): void {
-  const gradeIds = Array.from(this.selectedGrades);
-  for (const cls of this.classes) {
-    for (const student of cls.students) {
-      for (const grade of student.grades) {
-        if (gradeIds.includes(grade.id)) {
-          this.startEditGrade(grade);
+    this.cancelEditGrade(grade);
+
+    grade.isEditing = true;
+    grade.editValue = grade.value;
+    grade.editDate = grade.date ? new Date(grade.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+  }
+
+  bulkDelete(): void {
+    if (!confirm(`Are you sure you want to delete ${this.selectedGrades.size} grades?`)) return;
+
+    const gradeIds = Array.from(this.selectedGrades);
+    gradeIds.forEach((id) => {
+      // Găsește studentul care are această notă
+      for (const cls of this.classes) {
+        for (const student of cls.students) {
+          const grade = student.grades.find(g => g.id === id);
+          if (grade) {
+            this.deleteGrade(grade, student); // Refolosim logica existentă
+          }
+        }
+      }
+    });
+
+    this.selectedGrades.clear();
+  }
+
+  bulkEdit(): void {
+    const gradeIds = Array.from(this.selectedGrades);
+    for (const cls of this.classes) {
+      for (const student of cls.students) {
+        for (const grade of student.grades) {
+          if (gradeIds.includes(grade.id)) {
+            this.startEditGrade(grade);
+          }
         }
       }
     }
   }
-}
 
 
-cancelEditGrade(grade: Grade): void {
-  grade.isEditing = false;
-  grade.editValue = undefined;
-  grade.editDate = undefined;
-}
+  cancelEditGrade(grade: Grade): void {
+    grade.isEditing = false;
+    grade.editValue = undefined;
+    grade.editDate = undefined;
+  }
 
 
   saveEditGrade(grade: Grade): void {
@@ -427,7 +431,7 @@ cancelEditGrade(grade: Grade): void {
         this.cancelEditGrade(grade);
 
         console.log(grade)
-        
+
       },
       error: (error) => {
         console.error('Error updating grade:', error);
@@ -454,13 +458,13 @@ cancelEditGrade(grade: Grade): void {
 
   deleteGrade(grade: Grade, student: Student): void {
     if (!grade.id) return;
-  
+
     if (!confirm('Are you sure you want to delete this grade?')) return;
-  
+
     this.userService.deleteGrade(grade.id).subscribe({
       next: () => {
         console.log('Grade deleted successfully');
-  
+
         student.grades = student.grades.filter(g => g.id !== grade.id);
       },
       error: (error) => {
@@ -469,33 +473,33 @@ cancelEditGrade(grade: Grade): void {
       }
     });
   }
-  
+
   isGradeInvalid(value: string | number | undefined | null): boolean {
     if (value === null || value === undefined || value === '') return true;
-  
+
     const strValue = String(value).trim();
     const num = Number(strValue);
-  
+
     return isNaN(num) || num < 1 || num > 10 || !Number.isInteger(num);
   }
-  
-  
-  
+
+
+
   addStudent(index: number, event: Event) {
     event.stopPropagation();
-  
+
     const studentName = this.classes[index].newStudentName?.trim();
     const classId = this.classes[index].classId;
-  
+
     if (!studentName) {
       alert('Student name cannot be empty.');
       return;
     }
-  
+
     this.userService.addStudentToClass(classId, studentName).subscribe({
       next: (response) => {
         console.log(`Student added successfully via API: ${studentName}`, response);
-  
+
         if (response.studentId) {
           const newStudent: Student = {
             name: studentName,
@@ -506,7 +510,7 @@ cancelEditGrade(grade: Grade): void {
         } else {
           console.warn('Student added but no ID returned:', response);
         }
-  
+
         this.classes[index].newStudentName = '';
         this.classes[index].showInput = false;
         this.classes[index].expanded = true;
@@ -520,18 +524,18 @@ cancelEditGrade(grade: Grade): void {
 
   deleteStudent(classIndex: number, event: Event) {
     event.stopPropagation();
-  
+
     const studentName = this.classes[classIndex].newStudentName?.trim();
     if (!studentName) return;
-  
+
     const student = this.classes[classIndex].students.find(s => s.name === studentName);
     if (!student) {
       alert("Student not found!");
       return;
     }
-  
+
     const classId = this.classes[classIndex].classId;
-  
+
     this.userService.deleteStudent(classId, student.studentId).subscribe({
       next: () => {
         console.log(`Student ${student.studentId} deleted from class ${classId}`);
@@ -544,5 +548,11 @@ cancelEditGrade(grade: Grade): void {
         this.errorMessage = `Error deleting student: ${error?.error?.message || 'Unknown error'}`;
       }
     });
+  }
+
+  sortGradesByDate(student: any): void {
+    if (student.grades && student.grades.length > 0) {
+      student.grades.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    }
   }
 }
