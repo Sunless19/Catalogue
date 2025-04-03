@@ -3,6 +3,7 @@ using Catalog.Dtos;
 using Catalog.Models;
 using Catalog.Repository; // ✅ Added missing namespace
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Linq;
 
 namespace Catalog.Repositories // ✅ Changed namespace to match the project structure
@@ -52,7 +53,7 @@ namespace Catalog.Repositories // ✅ Changed namespace to match the project str
             return _context.Classes.FirstOrDefault(c => c.Name == className);
         }
 
-        public int AddStudentToClass(string className, string studentName, out string errorMessage)
+        public int AddStudentToClass(int classId, string studentName, out string errorMessage)
         {
             errorMessage = string.Empty;
 
@@ -65,7 +66,7 @@ namespace Catalog.Repositories // ✅ Changed namespace to match the project str
 
             var classEntity = _context.Classes
                 .Include(c => c.StudentClasses)
-                .FirstOrDefault(c => c.Name == className);
+                .FirstOrDefault(c => c.Id == classId);
             if (classEntity == null)
             {
                 errorMessage = "Class not found.";

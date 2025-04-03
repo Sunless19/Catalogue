@@ -6,7 +6,7 @@ namespace Catalog.Repository
     public interface IClassRepository
     {
         IEnumerable<ClassDto> GetClassesByTeacherId(int teacherId);
-        int AddStudentToClass(string className, string studentName, out string errorMessage);
+        int AddStudentToClass(int classId, string studentName, out string errorMessage);
         void Update(Class classEntity);
         Class? GetById(int classId);
         Class? GetByName(string className);

@@ -418,14 +418,14 @@ cancelEditGrade(grade: Grade): void {
     event.stopPropagation();
   
     const studentName = this.classes[index].newStudentName?.trim();
-    const className = this.classes[index].name;
+    const classId = this.classes[index].classId;
   
     if (!studentName) {
       alert('Student name cannot be empty.');
       return;
     }
   
-    this.userService.addStudentToClass(className, studentName).subscribe({
+    this.userService.addStudentToClass(classId, studentName).subscribe({
       next: (response) => {
         console.log(`Student added successfully via API: ${studentName}`, response);
   

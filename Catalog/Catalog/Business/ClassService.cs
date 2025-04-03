@@ -20,7 +20,7 @@ public class ClassService : IClassRepository
         return _classRepository.GetClassesByTeacherId(teacherId);
     }
 
-    public int AddStudentToClass(string className, string studentName, out string errorMessage)
+    public int AddStudentToClass(int classId, string studentName, out string errorMessage)
     {
         errorMessage = string.Empty;
         var student = _userRepository.GetStudentByUsername(studentName);
@@ -30,7 +30,7 @@ public class ClassService : IClassRepository
             return -1;
         }
 
-        var classEntity = _classRepository.GetByName(className);
+        var classEntity = _classRepository.GetById(classId);
         if (classEntity == null)
         {
             errorMessage = "Class not found.";

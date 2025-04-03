@@ -31,13 +31,13 @@ public class ClassController : ControllerBase
     [HttpPost("add-student")]
     public IActionResult AddStudentToClass([FromBody] AddStudentRequest request)
     {
-        if (request == null || string.IsNullOrWhiteSpace(request.ClassName) || string.IsNullOrWhiteSpace(request.StudentName))
+        if (request == null || request.ClassId <= 0 || string.IsNullOrWhiteSpace(request.StudentName))
         {
             return BadRequest(new { Message = "Invalid request data." });
         }
 
         string errorMessage;
-        int studentId = _classService.AddStudentToClass(request.ClassName, request.StudentName, out errorMessage);
+        int studentId = _classService.AddStudentToClass(request.ClassId, request.StudentName, out errorMessage);
 
         if (studentId == -1)
         {
@@ -66,7 +66,7 @@ public class ClassController : ControllerBase
 
     public class AddStudentRequest
     {
-        public string ClassName { get; set; }
+        public int ClassId { get; set; }
         public string StudentName { get; set; }
     }
     public class DeleteStudentRequest

@@ -172,21 +172,21 @@ export class UserService {
       })
     );
   }
-  addStudentToClass(className: string, studentName: string): Observable<any> {
+  addStudentToClass(classId: number, studentName: string): Observable<any> {
     const headers = this.getAuthHeaders();
     if (!headers.has('Authorization')) {
-      return throwError(() => new Error('Authorization header missing'));
+        return throwError(() => new Error('Authorization header missing'));
     }
-    const payload = { className, studentName };
-  
+    const payload = { classId, studentName };
+
     return this.http.post<any>(`${this.classApiUrl}/add-student`, payload, { headers }).pipe(
-      tap((response) => console.log('Added student via API:', response)),
-      catchError(err => {
-        console.error('Error adding student:', err);
-        return throwError(() => err);
-      })
+        tap((response) => console.log('Added student via API:', response)),
+        catchError(err => {
+            console.error('Error adding student:', err);
+            return throwError(() => err);
+        })
     );
-  }
+}
   deleteStudent(classId: number, studentId: number): Observable<any> {
     const headers = this.getAuthHeaders();
     if (!headers.has('Authorization')) {
@@ -197,7 +197,7 @@ export class UserService {
   
     return this.http.request('DELETE', `${this.classApiUrl}/delete-student`, {
       headers,
-      body: payload, // ✅ Sending payload in request body
+      body: payload,
     }).pipe(
       catchError(err => {
         console.error('Error deleting student:', err);
