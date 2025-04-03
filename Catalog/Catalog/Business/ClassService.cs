@@ -20,32 +20,55 @@ public class ClassService : IClassRepository
         return _classRepository.GetClassesByTeacherId(teacherId);
     }
 
-    public bool AddStudentToClass(string className, string studentName, out string errorMessage)
+    public int AddStudentToClass(string className, string studentName, out string errorMessage)
     {
         errorMessage = string.Empty;
         var student = _userRepository.GetStudentByUsername(studentName);
         if (student == null)
         {
             errorMessage = "Student does not exist.";
-            return false;
+            return -1;
         }
 
         var classEntity = _classRepository.GetByName(className);
         if (classEntity == null)
         {
             errorMessage = "Class not found.";
-            return false;
+            return -1;
         }
 
-        // Check if student is already in this class
+        // Check if the student is already in this class
         if (classEntity.StudentClasses.Any(sc => sc.StudentId == student.UserId))
         {
             errorMessage = "Student is already in this class.";
+            return -1;
+        }
+
+        // Add student to the class
+        classEntity.StudentClasses.Add(new StudentClass { StudentId = student.UserId, ClassId = classEntity.Id });
+        _classRepository.Save();
+
+        return student.UserId; // Return student ID
+    }
+    public bool RemoveStudentFromClass(int classId, int studentId, out string errorMessage)
+    {
+        errorMessage = string.Empty;
+
+        var classEntity = _classRepository.GetById(classId);
+        if (classEntity == null)
+        {
+            errorMessage = "Class not found.";
             return false;
         }
 
-        // Add the student to the class
-        classEntity.StudentClasses.Add(new StudentClass { StudentId = student.UserId, ClassId = classEntity.Id });
+        var studentClass = classEntity.StudentClasses.FirstOrDefault(sc => sc.StudentId == studentId);
+        if (studentClass == null)
+        {
+            errorMessage = "Student is not enrolled in this class.";
+            return false;
+        }
+
+        classEntity.StudentClasses.Remove(studentClass);
         _classRepository.Save();
 
         return true;

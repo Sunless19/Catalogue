@@ -178,7 +178,9 @@ export class UserService {
       return throwError(() => new Error('Authorization header missing'));
     }
     const payload = { className, studentName };
+  
     return this.http.post<any>(`${this.classApiUrl}/add-student`, payload, { headers }).pipe(
+      tap((response) => console.log('Added student via API:', response)),
       catchError(err => {
         console.error('Error adding student:', err);
         return throwError(() => err);

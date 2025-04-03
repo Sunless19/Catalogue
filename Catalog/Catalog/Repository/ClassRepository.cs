@@ -52,7 +52,7 @@ namespace Catalog.Repositories // ✅ Changed namespace to match the project str
             return _context.Classes.FirstOrDefault(c => c.Name == className);
         }
 
-        public bool AddStudentToClass(string className, string studentName, out string errorMessage)
+        public int AddStudentToClass(string className, string studentName, out string errorMessage)
         {
             errorMessage = string.Empty;
 
@@ -60,7 +60,7 @@ namespace Catalog.Repositories // ✅ Changed namespace to match the project str
             if (student == null)
             {
                 errorMessage = "Student does not exist.";
-                return false;
+                return -1;
             }
 
             var classEntity = _context.Classes
@@ -69,21 +69,21 @@ namespace Catalog.Repositories // ✅ Changed namespace to match the project str
             if (classEntity == null)
             {
                 errorMessage = "Class not found.";
-                return false;
+                return -1;
             }
 
             // Check if the student is already in this class
             if (classEntity.StudentClasses.Any(sc => sc.StudentId == student.UserId))
             {
                 errorMessage = "Student is already in this class.";
-                return false;
+                return -1;
             }
 
-            // Add student to the class through StudentClass
+            // Add student to the class
             classEntity.StudentClasses.Add(new StudentClass { StudentId = student.UserId, ClassId = classEntity.Id });
             _context.SaveChanges();
 
-            return true;
+            return student.UserId; // Return student ID
         }
 
         public void Update(Class classEntity)
@@ -95,6 +95,26 @@ namespace Catalog.Repositories // ✅ Changed namespace to match the project str
         public void Save()
         {
             _context.SaveChanges();
+        }
+
+        public bool RemoveStudentFromClass(int classId, int studentId, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            var studentClass = _context.StudentClasses
+                .FirstOrDefault(sc => sc.ClassId == classId && sc.StudentId == studentId);
+
+            if (studentClass == null)
+            {
+                errorMessage = "Student is not enrolled in this class.";
+                return false;
+            }
+            var grades = _context.Grades.Where(g => g.ClassId == classId && g.StudentId == studentId).ToList();
+            _context.Grades.RemoveRange(grades);
+            _context.StudentClasses.Remove(studentClass);
+            _context.SaveChanges();
+
+            return true;
         }
     }
 }

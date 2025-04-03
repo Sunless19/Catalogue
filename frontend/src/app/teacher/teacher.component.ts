@@ -416,26 +416,39 @@ cancelEditGrade(grade: Grade): void {
   
   addStudent(index: number, event: Event) {
     event.stopPropagation();
-
+  
     const studentName = this.classes[index].newStudentName?.trim();
     const className = this.classes[index].name;
-
-    if (studentName) {
-      this.userService.addStudentToClass(className, studentName).subscribe({
-        next: (response) => {
-          console.log(`Student added successfully via API: ${studentName}`, response);
-          const newStudent: Student = { name: studentName, grades: [] , studentId: response.studentId };
-          this.classes[index].students.push(newStudent);
-          this.classes[index].newStudentName = '';
-          this.classes[index].showInput = false;
-          this.classes[index].expanded = true;
-        },
-        error: (error) => {
-          console.error('Error adding student:', error);
-          this.errorMessage = `Error adding student: ${error?.error?.message || 'Unknown error'}`;
-        }
-      });
+  
+    if (!studentName) {
+      alert('Student name cannot be empty.');
+      return;
     }
+  
+    this.userService.addStudentToClass(className, studentName).subscribe({
+      next: (response) => {
+        console.log(`Student added successfully via API: ${studentName}`, response);
+  
+        if (response.studentId) {
+          const newStudent: Student = {
+            name: studentName,
+            grades: [],
+            studentId: response.studentId,
+          };
+          this.classes[index].students.push(newStudent);
+        } else {
+          console.warn('Student added but no ID returned:', response);
+        }
+  
+        this.classes[index].newStudentName = '';
+        this.classes[index].showInput = false;
+        this.classes[index].expanded = true;
+      },
+      error: (error) => {
+        console.error('Error adding student:', error);
+        this.errorMessage = `Error adding student: ${error?.error?.message || 'Unknown error'}`;
+      }
+    });
   }
 
   deleteStudent(classIndex: number, event: Event) {
