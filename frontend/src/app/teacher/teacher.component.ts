@@ -479,4 +479,9 @@ export class TeacherComponent implements OnInit {
     });
   }
 
+  sortGradesByDate(student: any): void {
+    if (student.grades && student.grades.length > 0) {
+      student.grades.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    }
+  }
 }
