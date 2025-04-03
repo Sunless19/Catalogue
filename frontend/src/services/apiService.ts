@@ -38,17 +38,17 @@ export class UserService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  getTeacherId(): number | null {
+  getTeacherId(): number | 0 {
     const token = this.getToken();
-    if (!token) return null;
+    if (!token) return 0;
 
     try {
       const decoded = jwtDecode<JwtPayload>(token);
       const userId = parseInt(decoded.nameid, 10);
-      return !isNaN(userId) ? userId : null;
+      return !isNaN(userId) ? userId : 0;
     } catch (err) {
       console.error('Invalid token or missing ID claim', err);
-      return null;
+      return 0;
     }
   }
 

@@ -80,6 +80,31 @@
           <div *ngIf="student.grades.length === 0 && !isLoadingGrades" class="no-grades">
             No grades recorded yet.
           </div>
+          
+          <div class="multiple-grades-toggle">
+            <button 
+              (click)="toggleMultipleGradesMode(student.studentId)" 
+              class="btn-secondary"
+            >
+              {{ multipleGradesMode[student.studentId] ? '❌ Cancel' : '📝 Add Multiple Grades' }}
+            </button>
+          </div>
+          
+          <div *ngIf="multipleGradesMode[student.studentId]" class="multiple-grades-form">
+            <div class="form-instructions">Enter comma-separated grades (e.g., 8,9,7,10)</div>
+            <textarea
+              [(ngModel)]="multipleGradesValues[student.studentId]"
+              placeholder="Enter multiple grades separated by commas"
+              rows="2"
+            ></textarea>
+            <button
+              class="btn-primary"
+              (click)="addMultipleGrades(student.studentId, class.classId)"
+              [disabled]="!multipleGradesValues[student.studentId]"
+            >
+              ➕ Submit Multiple
+            </button>
+          </div>
 
           <div class="add-grade-form">
             <input
