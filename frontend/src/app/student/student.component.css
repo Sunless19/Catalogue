@@ -76,3 +76,17 @@ body {
     color: #777;
   }
   
+  .overall-average {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .subject-average {
+    font-size: 0.9rem;
+    font-weight: normal;
+    color: #666;
+    margin-left: 10px;
+  }
+  
