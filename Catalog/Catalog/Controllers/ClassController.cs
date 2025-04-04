@@ -28,6 +28,18 @@ public class ClassController : ControllerBase
         return Ok(classes);
     }
 
+    [HttpGet("student/{studentId}")]
+    public ActionResult<IEnumerable<ClassWithGradesDto>> GetStudentClassesWithGrades(int studentId)
+    {
+        var result = _classService.GetClassesWithGradesByStudentId(studentId);
+
+        if (!result.Any())
+            return NotFound("Student is not added to any class or has no grades");
+
+        return Ok(result);
+    }
+
+
     [HttpPost("add-student")]
     public IActionResult AddStudentToClass([FromBody] AddStudentRequest request)
     {

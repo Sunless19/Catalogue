@@ -8,6 +8,8 @@ namespace Catalog.Repository
         IEnumerable<ClassDto> GetClassesByTeacherId(int teacherId);
         int AddStudentToClass(int classId, string studentName, out string errorMessage);
         void Update(Class classEntity);
+
+        public IEnumerable<ClassWithGradesDto> GetClassesWithGradesByStudentId(int studentId);
         Class? GetById(int classId);
         Class? GetByName(string className);
         void Save();

@@ -1,12 +1,12 @@
 ﻿using Catalog.AppDBContext;
 using Catalog.Dtos;
 using Catalog.Models;
-using Catalog.Repository; // ✅ Added missing namespace
+using Catalog.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Linq;
 
-namespace Catalog.Repositories // ✅ Changed namespace to match the project structure
+namespace Catalog.Repositories 
 {
     public class ClassRepository : IClassRepository
     {
@@ -39,6 +39,33 @@ namespace Catalog.Repositories // ✅ Changed namespace to match the project str
                 }).ToList();
         }
 
+        public IEnumerable<ClassWithGradesDto> GetClassesWithGradesByStudentId(int studentId)
+        {
+            var studentClasses = _context.StudentClasses
+                .Where(sc => sc.StudentId == studentId)
+                .Include(sc => sc.Class)
+                .ToList();
+
+            var grades = _context.Grades
+                .Where(g => g.StudentId == studentId)
+                .Include(g => g.Teacher) 
+                .ToList();
+
+            var result = studentClasses.Select(sc => new ClassWithGradesDto
+            {
+                ClassId = sc.Class.Id,
+                ClassName = sc.Class.Name ?? string.Empty,
+                Grades = grades
+                    .Where(g => g.ClassId == sc.ClassId)
+                    .Select(g => new GradeEntry
+                    {
+                        Value = g.Value,
+                        Date = g.Date,
+                    }).ToList()
+            }).ToList();
+
+            return result;
+        }
 
         public Class? GetById(int classId)
         {
