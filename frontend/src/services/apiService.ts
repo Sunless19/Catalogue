@@ -210,6 +210,24 @@ export class UserService {
         })
     );
 }
+
+
+  getStudentClassesAndGrades(studentId: number): Observable<any[]> {
+    const headers = this.getAuthHeaders();
+    if (!headers.has('Authorization')) {
+      return throwError(() => new Error('Authorization header missing'));
+    }
+
+    return this.http.get<any[]>(`${this.classApiUrl}/student/${studentId}`, { headers }).pipe(
+      tap(classes => console.log(`Fetched classes and grades for student ${studentId}:`, classes)),
+      catchError(err => {
+        console.error(`Error fetching classes and grades for student ${studentId}:`, err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+
   deleteStudent(classId: number, studentId: number): Observable<any> {
     const headers = this.getAuthHeaders();
     if (!headers.has('Authorization')) {
