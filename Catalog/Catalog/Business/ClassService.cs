@@ -20,6 +20,12 @@ public class ClassService : IClassRepository
         return _classRepository.GetClassesByTeacherId(teacherId);
     }
 
+    public IEnumerable<ClassWithGradesDto> GetClassesWithGradesByStudentId(int studentId)
+    {
+        return _classRepository.GetClassesWithGradesByStudentId(studentId);
+    }
+
+
     public int AddStudentToClass(int classId, string studentName, out string errorMessage)
     {
         errorMessage = string.Empty;

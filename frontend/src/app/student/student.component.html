@@ -1,1 +1,39 @@
-<p>Welcome to student view!</p>
+<div class="student-wrapper">
+    <div class="student-header">
+      <h2>📘 My Subjects</h2>
+      <div *ngIf="isLoading">Loading subjects and grades...</div>
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+    </div>
+  
+    <div *ngIf="!isLoading && studentClasses.length > 0">
+      <div *ngFor="let subject of studentClasses; let i = index" class="subject-card">
+        <div class="subject-header" (click)="toggleSubject(i)">
+          <h3>{{ subject.className }}</h3>
+          <button class="toggle-button">
+            {{ subject.expanded ? '🔼 Hide Grades' : '🔽 Show Grades' }}
+          </button>
+        </div>
+  
+        <div *ngIf="subject.expanded" class="grades-section">
+          <div *ngIf="subject.grades.length === 0" class="no-grades">
+            No grades recorded for this subject.
+          </div>
+  
+          <ul class="grades-list">
+            <li *ngFor="let grade of subject.grades" class="grade-item">
+              <span class="grade-icon">📝</span>
+              <strong>{{ grade.value }}</strong>
+              <span class="grade-date">({{ grade.date | date:'shortDate' }})</span>
+            </li>
+          </ul>
+          
+          
+        </div>
+      </div>
+    </div>
+  
+    <div *ngIf="!isLoading && studentClasses.length === 0 && !errorMessage" class="no-subjects">
+      You are not currently enrolled in any subjects.
+    </div>
+  </div>
+  
