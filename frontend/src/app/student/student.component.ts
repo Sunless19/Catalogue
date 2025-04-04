@@ -22,7 +22,8 @@ export class StudentComponent implements OnInit {
       next: (data) => {
         this.studentClasses = data.map(subject => ({
           ...subject,
-          expanded: false
+          expanded: false,
+          sortDescending: true // default: cele mai noi primele
         }));
         this.isLoading = false;
       },
@@ -31,6 +32,18 @@ export class StudentComponent implements OnInit {
         this.isLoading = false;
         console.error(err);
       }
+    });
+  }
+  
+  // 🔁 Toggle sort order for a subject
+  toggleSort(index: number): void {
+    const subject = this.studentClasses[index];
+    subject.sortDescending = !subject.sortDescending;
+  
+    subject.grades.sort((a: any, b: any) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return subject.sortDescending ? dateB - dateA : dateA - dateB;
     });
   }
 
