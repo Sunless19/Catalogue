@@ -1,6 +1,8 @@
 <div class="student-wrapper">
     <div class="student-header">
       <h2>📘 My Subjects</h2>
+      <div class="overall-average">📊 Overall Average: <strong>{{ overallAverage }}</strong></div>
+
       <div *ngIf="isLoading">Loading subjects and grades...</div>
       <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
@@ -9,6 +11,7 @@
       <div *ngFor="let subject of studentClasses; let i = index" class="subject-card">
         <div class="subject-header" (click)="toggleSubject(i)">
           <h3>{{ subject.className }}</h3>
+          <span class="subject-average">– Avg: {{ averageForSubject(subject.grades) }}</span>
           <button class="toggle-button">
             {{ subject.expanded ? '🔼 Hide Grades' : '🔽 Show Grades' }}
           </button>
