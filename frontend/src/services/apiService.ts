@@ -246,4 +246,31 @@ export class UserService {
       })
     );
   }
+
+  sendResetEmail(email: string): Observable<any> {
+    const payload = { email };
+    return this.http.post(`${this.apiUrl}/send-reset-email`, payload).pipe(
+      tap(() => console.log('Reset link sent to email:', email)),
+      catchError(err => {
+        console.error('Error sending reset link:', err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  confirmPasswordReset(encodedId: string, newPassword: string): Observable<any> {
+    const payload = {
+      encodedId,
+      newPassword
+    };
+  
+    return this.http.post(`${this.apiUrl}/reset-password`, payload).pipe(
+      tap(() => console.log('Password reset successful for ID:', encodedId)),
+      catchError(err => {
+        console.error('Error resetting password:', err);
+        return throwError(() => err);
+      })
+    );
+  }
+  
 }

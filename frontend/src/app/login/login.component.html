@@ -31,8 +31,12 @@
         </div>
   
         <div class="form-footer">
-          <a class="forgot-password" href="#">Forgot password?</a>
-        </div>
+          <button type="button" class="forgot-password" (click)="goToReset()">Forgot password?</button>
+        </div>      
+        
+        <div class="form-footer">
+          <button type="button" class="forgot-password" (click)="goToRgister()">Register</button>
+        </div>      
   
         <button type="submit" [disabled]="!loginForm.form.valid">Login</button>
       </form>

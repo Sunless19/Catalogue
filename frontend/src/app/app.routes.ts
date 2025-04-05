@@ -7,27 +7,28 @@ import { RegisterComponent } from './register/register.component';
 import { AuthGuard } from './guards/auth.guard';
 import { RoleGuard } from './guards/role.guard';
 import { RecoverPasswordComponent } from './recover-password/recover-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent},
-
     {
         path: 'student',
         component: StudentComponent,
         canActivate: [AuthGuard, RoleGuard],
         data: { role: 'Student' }
-      },
-      {
-        path: 'teacher',
-        component: TeacherComponent,
-        canActivate: [AuthGuard, RoleGuard],  
-        data: { role: 'Teacher' }
-      },
-      { path: 'error', component: ErrorComponent },
-      { path: '', redirectTo: 'login', pathMatch: 'full' },
+    },
+    {
+      path: 'teacher',
+      component: TeacherComponent,
+      canActivate: [AuthGuard, RoleGuard],  
+      data: { role: 'Teacher' }
+    },
+    { path: 'error', component: ErrorComponent },
+    { path: '', redirectTo: 'login', pathMatch: 'full' },
     { path: 'recover', component: RecoverPasswordComponent},
     { path: 'error', component: ErrorComponent},
     { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: 'reset-password', component: ResetPasswordComponent },
 ];
   

@@ -17,6 +17,15 @@ export class LoginComponent {
 
   constructor(private userService: UserService, private router: Router) {}
 
+  goToRgister()
+  {
+    this.router.navigate(['/register']);
+  }
+
+  goToReset(){
+    this.router.navigate(['/recover']);
+  }
+
   onLogin() {
 
     this.userService.login(this.username, this.password).subscribe({

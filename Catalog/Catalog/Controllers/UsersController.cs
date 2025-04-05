@@ -44,8 +44,8 @@ namespace Catalog.Controllers
         public IActionResult ResetPassword([FromBody] ResetPasswordRequest request)
         {
             var result = _userService.ResetPassword(request.EncodedId, request.NewPassword);
-            if (!result) return BadRequest("Invalid ID or user not found");
-            return Ok("Password updated");
+            if (!result) return BadRequest( new { message = "Invalid ID or user not found" });
+            return Ok(new { message = "Password updated" });
         }
 
 
