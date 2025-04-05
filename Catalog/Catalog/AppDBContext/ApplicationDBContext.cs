@@ -66,6 +66,9 @@ namespace Catalog.AppDBContext
                 .WithMany()
                 .HasForeignKey(g => g.TeacherId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Grade>()
+    .Property(g => g.Assignments)
+    .HasMaxLength(500);
 
 
 
