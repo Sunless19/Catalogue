@@ -12,6 +12,7 @@ export interface Grade {
   editValue?: string | number;
   editDate?: string;
   id: number;
+  assignments?: string;
 }
 
 export interface Student {
@@ -19,7 +20,6 @@ export interface Student {
   grades: Grade[];
   studentId: number;
 }
-
 export interface Class {
   name: string;
   students: Student[];

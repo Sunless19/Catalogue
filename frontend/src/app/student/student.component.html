@@ -27,10 +27,14 @@
         </div>
 
         <ul class="grades-list">
-          <li *ngFor="let grade of subject.grades" class="grade-item">
+          <li *ngFor="let grade of subject.grades" class="grade-item" (click)="toggleAssignment(grade)">
             <span class="grade-icon">📝</span>
             <strong>{{ grade.value }}</strong>
             <span class="grade-date">({{ grade.date | date:'shortDate' }})</span>
+        
+            <div *ngIf="grade.expanded" class="assignment-details">
+              <strong>Assignments:</strong> {{ grade.assignments || 'No assignments provided.' }}
+            </div>
           </li>
         </ul>
       </div>

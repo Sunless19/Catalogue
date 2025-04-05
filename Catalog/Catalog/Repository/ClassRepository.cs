@@ -61,6 +61,7 @@ namespace Catalog.Repositories
                     {
                         Value = g.Value,
                         Date = g.Date,
+                        Assignments = g.Assignments
                     }).ToList()
             }).ToList();
 
