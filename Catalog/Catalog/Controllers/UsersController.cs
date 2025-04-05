@@ -1,4 +1,5 @@
 ﻿using Catalog.Models;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.Controllers
@@ -23,6 +24,29 @@ namespace Catalog.Controllers
             return Ok(new { Token = token });
         }
 
+
+        [HttpPost("reset")]
+        public IActionResult ResetPassword(string email)
+        {
+            try
+            {
+                bool ok = _userService.SendPasswordResetEmail(email);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("reset-password")]
+        public IActionResult ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            var result = _userService.ResetPassword(request.EncodedId, request.NewPassword);
+            if (!result) return BadRequest( new { message = "Invalid ID or user not found" });
+            return Ok(new { message = "Password updated" });
+        }
 
 
         [HttpPost("register")]
@@ -74,4 +98,9 @@ namespace Catalog.Controllers
         public string Role { get; set; } = "User";
     }
 
+    public class ResetPasswordRequest
+    {
+        public string EncodedId { get; set; } = null!;
+        public string NewPassword { get; set;} = null!;
+    }
 }
