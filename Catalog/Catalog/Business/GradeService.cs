@@ -57,7 +57,7 @@ namespace Catalog.Services
             return grade;
         }
 
-        public async Task<Grade?> UpdateGradeAsync(int gradeId, double value, DateTime date)
+        public async Task<Grade?> UpdateGradeAsync(int gradeId, double value, DateTime date, string assigmet)
         {
             var grade = await _context.Grades.FindAsync(gradeId);
 
@@ -67,6 +67,7 @@ namespace Catalog.Services
             // Only modify Value and Date
             grade.Value = value;
             grade.Date = date;
+            grade.Assignments = assigmet;
 
             await _context.SaveChangesAsync();
             return grade;

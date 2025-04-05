@@ -13,6 +13,7 @@ export interface Grade {
   editDate?: string;
   id: number;
   assignments?: string;
+  editAssignmentName?: string;
 }
 
 export interface Student {
@@ -359,6 +360,7 @@ toggleMultipleGradesMode(studentId: number): void {
     grade.isEditing = true;
     grade.editValue = grade.value;
     grade.editDate = grade.date ? new Date(grade.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+    grade.editAssignmentName = grade.assignmentName || '';
   }
 
   bulkDelete(): void {
@@ -417,7 +419,8 @@ toggleMultipleGradesMode(studentId: number): void {
 
     const updatePayload: Partial<Grade> = {
       value: grade.editValue,
-      date: new Date(grade.editDate!).toISOString()
+      date: new Date(grade.editDate!).toISOString(),
+      assignments: grade.editAssignmentName
     };
 
     console.log('Updating grade:', grade.id, updatePayload);
@@ -428,6 +431,7 @@ toggleMultipleGradesMode(studentId: number): void {
 
         grade.value = res.grade.value;
         grade.date = res.grade.date;
+        grade.assignmentName = res.grade.assignmentName;
 
         this.cancelEditGrade(grade);
 

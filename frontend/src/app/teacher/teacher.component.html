@@ -74,6 +74,7 @@
               <ng-container *ngIf="grade.isEditing">
                 <div class="edit-grade-form" (click)="$event.stopPropagation()">
                   <input type="text" [(ngModel)]="grade.editValue" placeholder="Grade value" />
+                  <input type="text" [(ngModel)]="grade.editAssignmentName" placeholder="Assignment description" />
                   <input type="date" [(ngModel)]="grade.editDate" />
                   <button (click)="saveEditGrade(grade)">💾 Save</button>
                   <button (click)="cancelEditGrade(grade)">❌ Cancel</button>

@@ -70,7 +70,7 @@ namespace Catalog.Controllers
 
             try
             {
-                var updatedGrade = await _gradeService.UpdateGradeAsync(gradeId, request.Value, request.Date);
+                var updatedGrade = await _gradeService.UpdateGradeAsync(gradeId, request.Value, request.Date, request.Assignments);
 
                 if (updatedGrade == null)
                     return NotFound("Grade not found");
@@ -134,5 +134,7 @@ namespace Catalog.Controllers
     {
         public double Value { get; set; }
         public DateTime Date { get; set; }
+
+        public string Assignments { get; set; }
     }
 }
