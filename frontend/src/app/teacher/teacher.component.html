@@ -132,19 +132,27 @@
 
           <div *ngIf="isAnyStudentSelected()" class="bulk-selected-grade-card">
             <h4>📝 Bulk Add Grade to Selected</h4>
-
+          
             <input type="text" *ngIf="!showBulkDescription" [(ngModel)]="selectedBulkGradeValue"
               placeholder="Enter grade for selected students"
               [ngClass]="{ 'invalid-input': isGradeInvalid(selectedBulkGradeValue) }" />
-
-            <textarea *ngIf="showBulkDescription" [(ngModel)]="bulkGradeDescription"
-              placeholder="Enter description for selected students" rows="2"
-              (click)="$event.stopPropagation()"></textarea>
-
-            <button class="btn-primary"
-              (click)="showBulkDescription ? bulkAddToSelected() : showBulkDescription = true; $event.stopPropagation()"
-              [disabled]="!showBulkDescription && isGradeInvalid(selectedBulkGradeValue)">
-              {{ showBulkDescription ? '➕ Apply Grade' : 'Next' }}
+          
+            <div *ngIf="showBulkDescription" class="bulk-desc-row">
+              <textarea [(ngModel)]="bulkGradeDescription"
+                placeholder="Enter description for selected students" rows="2"
+                (click)="$event.stopPropagation()"></textarea>
+          
+              <button class="btn-primary"
+                (click)="bulkAddToSelected(); $event.stopPropagation()"
+                [disabled]="isGradeInvalid(selectedBulkGradeValue)">
+                ➕ Apply Grade
+              </button>
+            </div>
+          
+            <button *ngIf="!showBulkDescription" class="btn-primary"
+              (click)="showBulkDescription = true; $event.stopPropagation()"
+              [disabled]="isGradeInvalid(selectedBulkGradeValue)">
+              Next
             </button>
           </div>
 
