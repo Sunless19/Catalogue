@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Catalog.Models;
 using Catalog.Repositories;
+using System.Net.Mail;
+using System.Net;
 
 public class UserService
 {
@@ -61,6 +63,81 @@ public class UserService
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
+    }
+
+    public bool SendPasswordResetEmail(string email)
+    {
+        var user = _userRepository.GetByEmail(email);
+        if (user == null) return false;
+
+        var userIdBytes = Encoding.UTF8.GetBytes(user.UserId.ToString());
+        var encodedId = Convert.ToBase64String(userIdBytes);
+
+        var resetLink = $"http://localhost:4200/reset-password?id={encodedId}";
+
+        SendEmail(email, resetLink);
+
+        return true;
+    }
+
+    public bool ResetPassword(string encodedId, string newPassword)
+    {
+        try
+        {
+            var userIdString = Encoding.UTF8.GetString(Convert.FromBase64String(encodedId));
+            if (!int.TryParse(userIdString, out int userId))
+                return false;
+
+            var user = _userRepository.GetById(userId);
+            if (user == null)
+                return false;
+
+            user.Password = newPassword;
+            _userRepository.Update(user);
+            _userRepository.Save();
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private void SendEmail(string toEmail, string resetLink)
+    {
+        try
+        {
+            var fromAddress = new MailAddress("andreeaangelescu011@gmail.com", "Catalogue");
+            var toAddress = new MailAddress(toEmail);
+            const string fromPassword = "gtijsbwygsfexkpb"; 
+            const string subject = "Reset Your Password";
+            string body = $"Click the link below to reset your password:\n{resetLink}";
+
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+            };
+
+            using var message = new MailMessage(fromAddress, toAddress)
+            {
+                Subject = subject,
+                Body = body
+            };
+
+            smtp.Send(message);
+            Console.WriteLine("Email sent successfully!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("❌ Failed to send email: " + ex.Message);
+            Console.WriteLine("StackTrace: " + ex.StackTrace);
+        }
     }
 
 }

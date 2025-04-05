@@ -6,6 +6,7 @@ import { ErrorComponent } from './error/error.component';
 import { RegisterComponent } from './register/register.component';
 import { AuthGuard } from './guards/auth.guard';
 import { RoleGuard } from './guards/role.guard';
+import { RecoverPasswordComponent } from './recover-password/recover-password.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -20,10 +21,13 @@ export const routes: Routes = [
       {
         path: 'teacher',
         component: TeacherComponent,
-        canActivate: [AuthGuard, RoleGuard],
+        canActivate: [AuthGuard, RoleGuard],  
         data: { role: 'Teacher' }
       },
       { path: 'error', component: ErrorComponent },
-      { path: '', redirectTo: 'login', pathMatch: 'full' }
+      { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: 'recover', component: RecoverPasswordComponent},
+    { path: 'error', component: ErrorComponent},
+    { path: '', redirectTo: 'login', pathMatch: 'full' },
 ];
   

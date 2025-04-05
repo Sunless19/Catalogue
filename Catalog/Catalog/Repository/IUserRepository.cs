@@ -13,6 +13,7 @@ namespace Catalog.Repositories
         void Add(User user);
         void Update(User user);
 
+        public User? GetById(int id);
         void Save();
 
         Student? GetStudentByUsername(string username);

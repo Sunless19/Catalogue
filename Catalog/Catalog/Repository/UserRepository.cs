@@ -76,5 +76,9 @@ namespace Catalog.Repositories
                            .FirstOrDefault(s => s.Name == username);
         }
 
+        public User? GetById(int id)
+        {
+            return _context.Users.FirstOrDefault(u => u.UserId == id);
+        }
     }
 }
