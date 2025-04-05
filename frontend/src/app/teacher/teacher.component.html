@@ -17,12 +17,9 @@
       </div>
 
       <div *ngIf="class.showInput" class="add-student-input" (click)="$event.stopPropagation()">
-        <input
-          type="text"
-          [(ngModel)]="class.newStudentName"
+        <input type="text" [(ngModel)]="class.newStudentName"
           [placeholder]="class.inputMode === 'add' ? 'New student name' : 'Student name'"
-          (keyup.enter)="class.inputMode === 'add' ? addStudent(i, $event) : deleteStudent(i, $event)"
-        />
+          (keyup.enter)="class.inputMode === 'add' ? addStudent(i, $event) : deleteStudent(i, $event)" />
         <button (click)="class.inputMode === 'add' ? addStudent(i, $event) : deleteStudent(i, $event)">
           {{ class.inputMode === 'add' ? 'Add' : 'Delete' }}
         </button>
@@ -32,15 +29,12 @@
       <div *ngIf="class.expanded" class="students-container">
         <div *ngIf="class.students.length === 0" class="no-students">No students in this class yet.</div>
 
-        
+
         <div *ngFor="let student of class.students" class="student-card">
           <div class="student-header">
             <h4>{{ student.name }}</h4>
-            <input
-            type="checkbox"
-            [checked]="selectedStudentIds.has(student.studentId)"
-            (change)="toggleStudentSelection(student.studentId)"
-          />
+            <input type="checkbox" [checked]="selectedStudentIds.has(student.studentId)"
+              (change)="toggleStudentSelection(student.studentId)" />
           </div>
 
           <div class="sort-button-wrapper">
@@ -51,13 +45,9 @@
           <ul class="grades-list">
             <li *ngFor="let grade of student.grades" class="grade-item">
               <ng-container *ngIf="!grade.isEditing">
-                <input
-                type="checkbox"
-                [checked]="selectedGrades.has(grade.id)"
-                (click)="toggleGradeSelection(grade.id); $event.stopPropagation()"
-                class="grade-checkbox"
-              />
-        
+                <input type="checkbox" [checked]="selectedGrades.has(grade.id)"
+                  (click)="toggleGradeSelection(grade.id); $event.stopPropagation()" class="grade-checkbox" />
+
                 <span>
                   {{ grade.assignmentName ? grade.assignmentName + ': ' : '' }}
                   <strong>{{ grade.value || 'N/A' }}</strong>
@@ -86,107 +76,84 @@
           <div *ngIf="student.grades.length === 0 && !isLoadingGrades" class="no-grades">
             No grades recorded yet.
           </div>
-          
+
           <div class="multiple-grades-toggle">
-            <button 
-              (click)="toggleMultipleGradesMode(student.studentId)" 
-              class="btn-secondary"
-            >
+            <button (click)="toggleMultipleGradesMode(student.studentId)" class="btn-secondary">
               {{ multipleGradesMode[student.studentId] ? '❌ Cancel' : '📝 Add Multiple Grades' }}
             </button>
           </div>
-          
-          <div *ngIf="multipleGradesMode[student.studentId]" class="multiple-grades-form" (click)="$event.stopPropagation()">
+
+          <div *ngIf="multipleGradesMode[student.studentId]" class="multiple-grades-form"
+            (click)="$event.stopPropagation()">
             <div *ngIf="!isAddingMultipleDescription[student.studentId]">
               <div class="form-instructions">
                 Enter comma-separated grades (e.g., 8,9,7,10)
               </div>
-              <textarea
-                [(ngModel)]="multipleGradesValues[student.studentId]"
-                placeholder="Enter multiple grades separated by commas"
-                rows="2"
-                (click)="$event.stopPropagation()"
-              ></textarea>
-              <button
-                class="btn-primary"
-                (click)="goToMultipleDescription(student.studentId); $event.stopPropagation()"
-                [disabled]="!multipleGradesValues[student.studentId]"
-              >
+              <textarea [(ngModel)]="multipleGradesValues[student.studentId]"
+                placeholder="Enter multiple grades separated by commas" rows="2"
+                (click)="$event.stopPropagation()"></textarea>
+              <button class="btn-primary" (click)="goToMultipleDescription(student.studentId); $event.stopPropagation()"
+                [disabled]="!multipleGradesValues[student.studentId]">
                 ➡️ Next
               </button>
             </div>
-          
-            <!-- Step 2: Assignment description + Submit -->
+
+
             <div *ngIf="isAddingMultipleDescription[student.studentId]">
-              <textarea
-                [(ngModel)]="multipleGradeDescriptions[student.studentId]"
-                placeholder="Enter assignment description"
-                rows="2"
-                (click)="$event.stopPropagation()"
-              ></textarea>
-              <button
-                class="btn-primary"
+              <textarea [(ngModel)]="multipleGradeDescriptions[student.studentId]"
+                placeholder="Enter assignment description" rows="2" (click)="$event.stopPropagation()"></textarea>
+              <button class="btn-primary"
                 (click)="addMultipleGrades(student.studentId, class.classId); $event.stopPropagation()"
-                [disabled]="!multipleGradeDescriptions[student.studentId]"
-              >
+                [disabled]="!multipleGradeDescriptions[student.studentId]">
                 ➕ Submit Multiple
               </button>
             </div>
           </div>
 
           <div class="add-grade-form" (click)="$event.stopPropagation()">
-            <input
-              type="text"
-              *ngIf="!isAddingDescription[student.studentId]"
-              [(ngModel)]="newGradeValues[student.studentId]"
-              placeholder="Enter grade"
-              [ngClass]="{'invalid-input': isGradeInvalid(newGradeValues[student.studentId])}"
-            />
-          
-            <textarea
-              *ngIf="isAddingDescription[student.studentId]"
-              [(ngModel)]="gradeDescriptions[student.studentId]"
-              placeholder="Enter assignment description"
-              rows="2"
-            ></textarea>
-          
-            <button
-              class="btn-primary"
+            <input type="text" *ngIf="!isAddingDescription[student.studentId]"
+              [(ngModel)]="newGradeValues[student.studentId]" placeholder="Enter grade"
+              [ngClass]="{'invalid-input': isGradeInvalid(newGradeValues[student.studentId])}" />
+
+            <textarea *ngIf="isAddingDescription[student.studentId]" [(ngModel)]="gradeDescriptions[student.studentId]"
+              placeholder="Enter assignment description" rows="2"></textarea>
+
+            <button class="btn-primary"
               (click)="handleGradeSubmit(student.studentId, class.classId); $event.stopPropagation()"
-              [disabled]="!canSubmitGrade(student.studentId)"
-            >
+              [disabled]="!canSubmitGrade(student.studentId)">
               {{ isAddingDescription[student.studentId] ? 'Submit' : 'Next' }}
             </button>
           </div>
 
-        <div *ngIf="isAnyGradeSelected()" class="bulk-actions">
-          <button class="btn-delete" (click)="bulkDelete()">🗑️ Bulk Delete</button>
-          <button class="btn-edit" (click)="bulkEdit()">✏️ Bulk Edit</button>
+          <div *ngIf="isAnyGradeSelected()" class="bulk-actions">
+            <button class="btn-delete" (click)="bulkDelete()">🗑️ Bulk Delete</button>
+            <button class="btn-edit" (click)="bulkEdit()">✏️ Bulk Edit</button>
+          </div>
+
+          <div *ngIf="isAnyStudentSelected()" class="bulk-selected-grade-card">
+            <h4>📝 Bulk Add Grade to Selected</h4>
+
+            <input type="text" *ngIf="!showBulkDescription" [(ngModel)]="selectedBulkGradeValue"
+              placeholder="Enter grade for selected students"
+              [ngClass]="{ 'invalid-input': isGradeInvalid(selectedBulkGradeValue) }" />
+
+            <textarea *ngIf="showBulkDescription" [(ngModel)]="bulkGradeDescription"
+              placeholder="Enter description for selected students" rows="2"
+              (click)="$event.stopPropagation()"></textarea>
+
+            <button class="btn-primary"
+              (click)="showBulkDescription ? bulkAddToSelected() : showBulkDescription = true; $event.stopPropagation()"
+              [disabled]="!showBulkDescription && isGradeInvalid(selectedBulkGradeValue)">
+              {{ showBulkDescription ? '➕ Apply Grade' : 'Next' }}
+            </button>
+          </div>
+
+
         </div>
-        
-        <div *ngIf="isAnyStudentSelected()" class="bulk-selected-grade-card">
-          <h4>📝 Bulk Add Grade to Selected</h4>
-          <input
-            type="text"
-            [(ngModel)]="selectedBulkGradeValue"
-            placeholder="Enter grade for selected students"
-            [ngClass]="{'invalid-input': isGradeInvalid(selectedBulkGradeValue)}"
-          />
-          <button
-            class="btn-primary"
-            (click)="bulkAddToSelected()"
-            [disabled]="isGradeInvalid(selectedBulkGradeValue)"
-          >
-            ➕ Apply Grade
-          </button>
-        </div>
-        
-        
       </div>
     </div>
-  </div>
 
-  <div *ngIf="!isLoadingClasses && classes.length === 0 && !errorMessage" class="no-classes">
-    You are not currently assigned to any classes.
+    <div *ngIf="!isLoadingClasses && classes.length === 0 && !errorMessage" class="no-classes">
+      You are not currently assigned to any classes.
+    </div>
   </div>
-</div>

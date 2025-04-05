@@ -49,6 +49,8 @@ export class TeacherComponent implements OnInit {
 
   teacherId: number=0 ; 
 
+  showBulkDescription = false;
+  bulkGradeDescription = '';
   isLoadingClasses = false;
   isLoadingGrades = false;
   errorMessage: string | null = null;
@@ -105,12 +107,24 @@ export class TeacherComponent implements OnInit {
 
   bulkAddToSelected(): void {
     const value = this.selectedBulkGradeValue;
-
+  
     if (this.isGradeInvalid(value)) {
       alert('Please enter a valid grade between 1 and 10.');
       return;
     }
-
+  
+    if (this.selectedStudentIds.size === 0) {
+      alert('Please select at least one student.');
+      return;
+    }
+  
+    if (!confirm(`Are you sure you want to add grade "${value}" to all selected students?`)) {
+      return;
+    }
+  
+    let successfulAdds = 0;
+    let failedAdds = 0;
+  
     for (const cls of this.classes) {
       for (const student of cls.students) {
         if (this.selectedStudentIds.has(student.studentId)) {
@@ -120,25 +134,43 @@ export class TeacherComponent implements OnInit {
             classId: cls.classId,
             value: value,
             date: new Date().toISOString(),
+            assignments: this.bulkGradeDescription
           };
-
+    
           this.userService.addGrade(newGrade).subscribe({
             next: (response: any) => {
               student.grades.push(response.grade);
-              console.log(`Added grade to student ${student.name}`);
+              successfulAdds++;
+              console.log(`Added grade to ${student.name}`);
+    
+              if (successfulAdds + failedAdds === this.selectedStudentIds.size) {
+                alert(`Bulk add complete: ${successfulAdds} success, ${failedAdds} failed.`);
+                this.selectedBulkGradeValue = '';
+                this.bulkGradeDescription = '';
+                this.selectedStudentIds.clear();
+              }
             },
             error: (error) => {
-              console.error('Error adding grade in bulk:', error);
-              this.errorMessage = `Bulk add failed: ${error?.error?.message || 'Unknown error'}`;
+              failedAdds++;
+              console.error(`Failed to add grade to ${student.name}:`, error);
+              this.errorMessage = `Bulk add error: ${error?.error?.message || 'Unknown error'}`;
+    
+              if (successfulAdds + failedAdds === this.selectedStudentIds.size) {
+                alert(`Bulk add complete: ${successfulAdds} success, ${failedAdds} failed.`);
+                this.selectedBulkGradeValue = '';
+                this.bulkGradeDescription = '';
+                this.selectedStudentIds.clear();
+              }
             }
           });
         }
       }
     }
-
+  
     this.selectedBulkGradeValue = '';
     this.selectedStudentIds.clear();
   }
+
 
 
   ngOnInit(): void {
