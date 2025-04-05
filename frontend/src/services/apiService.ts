@@ -248,8 +248,8 @@ export class UserService {
   }
 
   sendResetEmail(email: string): Observable<any> {
-    const payload = { email };
-    return this.http.post(`${this.apiUrl}/send-reset-email`, payload).pipe(
+    const url = `${this.apiUrl}/reset?email=${encodeURIComponent(email)}`;
+    return this.http.post(url, null).pipe(
       tap(() => console.log('Reset link sent to email:', email)),
       catchError(err => {
         console.error('Error sending reset link:', err);
@@ -257,7 +257,7 @@ export class UserService {
       })
     );
   }
-
+  
   confirmPasswordReset(encodedId: string, newPassword: string): Observable<any> {
     const payload = {
       encodedId,
