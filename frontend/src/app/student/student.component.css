@@ -27,11 +27,11 @@ body {
 
 .grade-item {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   padding: 6px 0;
-  border-bottom: 1px #ccc;
+  border-bottom: 1px solid #ccc;
 }
-
 .grade-date {
   margin-left: auto;
   font-size: 0.85em;
@@ -96,4 +96,12 @@ body {
   font-weight: normal;
   color: #666;
   margin-left: 10px;
+}
+.assignment-details {
+  background-color: #eef5ff;
+  margin-top: 5px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  color: #333;
 }

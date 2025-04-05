@@ -12,6 +12,8 @@ export interface Grade {
   editValue?: string | number;
   editDate?: string;
   id: number;
+  assignments?: string;
+  editAssignmentName?: string;
 }
 
 export interface Student {
@@ -19,7 +21,6 @@ export interface Student {
   grades: Grade[];
   studentId: number;
 }
-
 export interface Class {
   name: string;
   students: Student[];
@@ -48,6 +49,8 @@ export class TeacherComponent implements OnInit {
 
   teacherId: number=0 ; 
 
+  showBulkDescription = false;
+  bulkGradeDescription = '';
   isLoadingClasses = false;
   isLoadingGrades = false;
   errorMessage: string | null = null;
@@ -61,8 +64,12 @@ export class TeacherComponent implements OnInit {
 
   multipleGradesMode: { [studentId: number]: boolean } = {};
   multipleGradesValues: { [studentId: number]: string } = {};
-
+  isAddingDescription: { [studentId: number]: boolean } = {};
+  gradeDescriptions: { [studentId: number]: string } = {};
+  isAddingMultipleDescription: { [studentId: number]: boolean } = {};
+  multipleGradeDescriptions: { [studentId: number]: string } = {};
   constructor(private userService: UserService) {}
+  
 
 
   selectedStudentIds: Set<number> = new Set<number>();
@@ -71,7 +78,9 @@ export class TeacherComponent implements OnInit {
     return this.selectedStudentIds.size > 0;
   }
 
-
+  goToMultipleDescription(studentId: number): void {
+    this.isAddingMultipleDescription[studentId] = true;
+  }
   toggleStudentSelection(studentId: number): void {
     if (this.selectedStudentIds.has(studentId)) {
       this.selectedStudentIds.delete(studentId);
@@ -98,12 +107,24 @@ export class TeacherComponent implements OnInit {
 
   bulkAddToSelected(): void {
     const value = this.selectedBulkGradeValue;
-
+  
     if (this.isGradeInvalid(value)) {
       alert('Please enter a valid grade between 1 and 10.');
       return;
     }
-
+  
+    if (this.selectedStudentIds.size === 0) {
+      alert('Please select at least one student.');
+      return;
+    }
+  
+    if (!confirm(`Are you sure you want to add grade "${value}" to all selected students?`)) {
+      return;
+    }
+  
+    let successfulAdds = 0;
+    let failedAdds = 0;
+  
     for (const cls of this.classes) {
       for (const student of cls.students) {
         if (this.selectedStudentIds.has(student.studentId)) {
@@ -112,26 +133,44 @@ export class TeacherComponent implements OnInit {
             studentId: student.studentId,
             classId: cls.classId,
             value: value,
-            date: new Date().toISOString()
+            date: new Date().toISOString(),
+            assignments: this.bulkGradeDescription
           };
-
+    
           this.userService.addGrade(newGrade).subscribe({
             next: (response: any) => {
               student.grades.push(response.grade);
-              console.log(`Added grade to student ${student.name}`);
+              successfulAdds++;
+              console.log(`Added grade to ${student.name}`);
+    
+              if (successfulAdds + failedAdds === this.selectedStudentIds.size) {
+                alert(`Bulk add complete: ${successfulAdds} success, ${failedAdds} failed.`);
+                this.selectedBulkGradeValue = '';
+                this.bulkGradeDescription = '';
+                this.selectedStudentIds.clear();
+              }
             },
             error: (error) => {
-              console.error('Error adding grade in bulk:', error);
-              this.errorMessage = `Bulk add failed: ${error?.error?.message || 'Unknown error'}`;
+              failedAdds++;
+              console.error(`Failed to add grade to ${student.name}:`, error);
+              this.errorMessage = `Bulk add error: ${error?.error?.message || 'Unknown error'}`;
+    
+              if (successfulAdds + failedAdds === this.selectedStudentIds.size) {
+                alert(`Bulk add complete: ${successfulAdds} success, ${failedAdds} failed.`);
+                this.selectedBulkGradeValue = '';
+                this.bulkGradeDescription = '';
+                this.selectedStudentIds.clear();
+              }
             }
           });
         }
       }
     }
-
+  
     this.selectedBulkGradeValue = '';
     this.selectedStudentIds.clear();
   }
+
 
 
   ngOnInit(): void {
@@ -224,6 +263,7 @@ export class TeacherComponent implements OnInit {
   if (!gradesInput || gradesInput.trim() === '') {
     console.warn('Grades values are required.');
     return;
+    
   }
   
   // Parse comma-separated grades
@@ -242,7 +282,8 @@ export class TeacherComponent implements OnInit {
   // Create grades array for API
   const grades = gradeValues.map(value => ({
     value: parseInt(value),
-    date: new Date().toISOString()
+    date: new Date().toISOString(),
+    assignments: this.multipleGradeDescriptions[studentId]
   }));
   
   // Call the service method
@@ -268,6 +309,7 @@ export class TeacherComponent implements OnInit {
       // Reset inputs
       this.multipleGradesValues[studentId] = '';
       this.multipleGradesMode[studentId] = false;
+      this.multipleGradeDescriptions[studentId] = '';
     },
     error: (error) => {
       console.error('Error adding multiple grades:', error);
@@ -358,6 +400,7 @@ toggleMultipleGradesMode(studentId: number): void {
     grade.isEditing = true;
     grade.editValue = grade.value;
     grade.editDate = grade.date ? new Date(grade.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+    grade.editAssignmentName = grade.assignments;
   }
 
   bulkDelete(): void {
@@ -397,6 +440,7 @@ toggleMultipleGradesMode(studentId: number): void {
     grade.isEditing = false;
     grade.editValue = undefined;
     grade.editDate = undefined;
+    grade.editAssignmentName = '';
   }
 
 
@@ -416,7 +460,8 @@ toggleMultipleGradesMode(studentId: number): void {
 
     const updatePayload: Partial<Grade> = {
       value: grade.editValue,
-      date: new Date(grade.editDate!).toISOString()
+      date: new Date(grade.editDate!).toISOString(),
+      assignments: grade.editAssignmentName
     };
 
     console.log('Updating grade:', grade.id, updatePayload);
@@ -427,6 +472,7 @@ toggleMultipleGradesMode(studentId: number): void {
 
         grade.value = res.grade.value;
         grade.date = res.grade.date;
+        grade.assignmentName = res.grade.assignmentName;
 
         this.cancelEditGrade(grade);
 
@@ -553,6 +599,53 @@ toggleMultipleGradesMode(studentId: number): void {
   sortGradesByDate(student: any): void {
     if (student.grades && student.grades.length > 0) {
       student.grades.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    }
+  }
+  handleGradeSubmit(studentId: number, classId: number) {
+    if (!this.isAddingDescription[studentId]) {
+      // First step: go to description input
+      if (this.isGradeInvalid(this.newGradeValues[studentId])) {
+        console.warn('Grade value is required.');
+        return;
+      }
+      this.isAddingDescription[studentId] = true;
+    } else {
+      // Second step: submit with description
+      const newGrade: Partial<Grade> = {
+        teacherId: this.teacherId,
+        studentId: studentId,
+        classId: classId,
+        value: this.newGradeValues[studentId],
+        assignments: this.gradeDescriptions[studentId], // Add this to your backend model
+        date: new Date().toISOString()
+      };
+  
+      this.userService.addGrade(newGrade).subscribe({
+        next: (response: any) => {
+          console.log('Grade added successfully:', response);
+  
+          const classObj = this.classes.find(c => c.classId === classId);
+          const studentObj = classObj?.students.find(s => s.studentId === studentId);
+          studentObj?.grades.push(response.grade);
+  
+          // Reset all input states
+          this.newGradeValues[studentId] = '';
+          this.gradeDescriptions[studentId] = '';
+          this.isAddingDescription[studentId] = false;
+        },
+        error: (error) => {
+          console.error('Error adding grade:', error);
+          this.errorMessage = `Error adding grade: ${error?.error?.message || 'Unknown error'}`;
+        }
+      });
+    }
+  }
+
+  canSubmitGrade(studentId: number): boolean {
+    if (!this.isAddingDescription[studentId]) {
+      return !this.isGradeInvalid(this.newGradeValues[studentId]);
+    } else {
+      return !!this.gradeDescriptions[studentId]?.trim();
     }
   }
 }
