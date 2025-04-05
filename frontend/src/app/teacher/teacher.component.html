@@ -112,22 +112,30 @@
             </button>
           </div>
 
-          <div class="add-grade-form">
+          <div class="add-grade-form" (click)="$event.stopPropagation()">
             <input
               type="text"
+              *ngIf="!isAddingDescription[student.studentId]"
               [(ngModel)]="newGradeValues[student.studentId]"
               placeholder="Enter grade"
               [ngClass]="{'invalid-input': isGradeInvalid(newGradeValues[student.studentId])}"
             />
+          
+            <textarea
+              *ngIf="isAddingDescription[student.studentId]"
+              [(ngModel)]="gradeDescriptions[student.studentId]"
+              placeholder="Enter assignment description"
+              rows="2"
+            ></textarea>
+          
             <button
               class="btn-primary"
-              (click)="addGrade(student.studentId, class.classId)"
-              [disabled]="isGradeInvalid(newGradeValues[student.studentId])"
+              (click)="handleGradeSubmit(student.studentId, class.classId); $event.stopPropagation()"
+              [disabled]="!canSubmitGrade(student.studentId)"
             >
-              ➕ Submit
+              {{ isAddingDescription[student.studentId] ? 'Submit' : 'Next' }}
             </button>
           </div>
-        </div>
 
         <div *ngIf="isAnyGradeSelected()" class="bulk-actions">
           <button class="btn-delete" (click)="bulkDelete()">🗑️ Bulk Delete</button>

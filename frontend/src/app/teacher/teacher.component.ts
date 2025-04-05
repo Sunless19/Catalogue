@@ -61,7 +61,8 @@ export class TeacherComponent implements OnInit {
 
   multipleGradesMode: { [studentId: number]: boolean } = {};
   multipleGradesValues: { [studentId: number]: string } = {};
-
+  isAddingDescription: { [studentId: number]: boolean } = {};
+  gradeDescriptions: { [studentId: number]: string } = {};
   constructor(private userService: UserService) {}
 
 
@@ -553,6 +554,53 @@ toggleMultipleGradesMode(studentId: number): void {
   sortGradesByDate(student: any): void {
     if (student.grades && student.grades.length > 0) {
       student.grades.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    }
+  }
+  handleGradeSubmit(studentId: number, classId: number) {
+    if (!this.isAddingDescription[studentId]) {
+      // First step: go to description input
+      if (this.isGradeInvalid(this.newGradeValues[studentId])) {
+        console.warn('Grade value is required.');
+        return;
+      }
+      this.isAddingDescription[studentId] = true;
+    } else {
+      // Second step: submit with description
+      const newGrade: Partial<Grade> = {
+        teacherId: this.teacherId,
+        studentId: studentId,
+        classId: classId,
+        value: this.newGradeValues[studentId],
+        assignments: this.gradeDescriptions[studentId], // Add this to your backend model
+        date: new Date().toISOString()
+      };
+  
+      this.userService.addGrade(newGrade).subscribe({
+        next: (response: any) => {
+          console.log('Grade added successfully:', response);
+  
+          const classObj = this.classes.find(c => c.classId === classId);
+          const studentObj = classObj?.students.find(s => s.studentId === studentId);
+          studentObj?.grades.push(response.grade);
+  
+          // Reset all input states
+          this.newGradeValues[studentId] = '';
+          this.gradeDescriptions[studentId] = '';
+          this.isAddingDescription[studentId] = false;
+        },
+        error: (error) => {
+          console.error('Error adding grade:', error);
+          this.errorMessage = `Error adding grade: ${error?.error?.message || 'Unknown error'}`;
+        }
+      });
+    }
+  }
+
+  canSubmitGrade(studentId: number): boolean {
+    if (!this.isAddingDescription[studentId]) {
+      return !this.isGradeInvalid(this.newGradeValues[studentId]);
+    } else {
+      return !!this.gradeDescriptions[studentId]?.trim();
     }
   }
 }
