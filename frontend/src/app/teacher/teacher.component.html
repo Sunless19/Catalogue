@@ -97,20 +97,41 @@
           </div>
           
           <div *ngIf="multipleGradesMode[student.studentId]" class="multiple-grades-form" (click)="$event.stopPropagation()">
-            <div class="form-instructions">Enter comma-separated grades (e.g., 8,9,7,10)</div>
-            <textarea
-              [(ngModel)]="multipleGradesValues[student.studentId]"
-              placeholder="Enter multiple grades separated by commas"
-              rows="2"
-              (click)="$event.stopPropagation()"
-            ></textarea>
-            <button
-              class="btn-primary"
-              (click)="addMultipleGrades(student.studentId, class.classId); $event.stopPropagation()"
-              [disabled]="!multipleGradesValues[student.studentId]"
-            >
-              ➕ Submit Multiple
-            </button>
+            <div *ngIf="!isAddingMultipleDescription[student.studentId]">
+              <div class="form-instructions">
+                Enter comma-separated grades (e.g., 8,9,7,10)
+              </div>
+              <textarea
+                [(ngModel)]="multipleGradesValues[student.studentId]"
+                placeholder="Enter multiple grades separated by commas"
+                rows="2"
+                (click)="$event.stopPropagation()"
+              ></textarea>
+              <button
+                class="btn-primary"
+                (click)="goToMultipleDescription(student.studentId); $event.stopPropagation()"
+                [disabled]="!multipleGradesValues[student.studentId]"
+              >
+                ➡️ Next
+              </button>
+            </div>
+          
+            <!-- Step 2: Assignment description + Submit -->
+            <div *ngIf="isAddingMultipleDescription[student.studentId]">
+              <textarea
+                [(ngModel)]="multipleGradeDescriptions[student.studentId]"
+                placeholder="Enter assignment description"
+                rows="2"
+                (click)="$event.stopPropagation()"
+              ></textarea>
+              <button
+                class="btn-primary"
+                (click)="addMultipleGrades(student.studentId, class.classId); $event.stopPropagation()"
+                [disabled]="!multipleGradeDescriptions[student.studentId]"
+              >
+                ➕ Submit Multiple
+              </button>
+            </div>
           </div>
 
           <div class="add-grade-form" (click)="$event.stopPropagation()">

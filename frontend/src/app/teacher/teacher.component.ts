@@ -64,7 +64,10 @@ export class TeacherComponent implements OnInit {
   multipleGradesValues: { [studentId: number]: string } = {};
   isAddingDescription: { [studentId: number]: boolean } = {};
   gradeDescriptions: { [studentId: number]: string } = {};
+  isAddingMultipleDescription: { [studentId: number]: boolean } = {};
+  multipleGradeDescriptions: { [studentId: number]: string } = {};
   constructor(private userService: UserService) {}
+  
 
 
   selectedStudentIds: Set<number> = new Set<number>();
@@ -73,7 +76,9 @@ export class TeacherComponent implements OnInit {
     return this.selectedStudentIds.size > 0;
   }
 
-
+  goToMultipleDescription(studentId: number): void {
+    this.isAddingMultipleDescription[studentId] = true;
+  }
   toggleStudentSelection(studentId: number): void {
     if (this.selectedStudentIds.has(studentId)) {
       this.selectedStudentIds.delete(studentId);
@@ -114,7 +119,7 @@ export class TeacherComponent implements OnInit {
             studentId: student.studentId,
             classId: cls.classId,
             value: value,
-            date: new Date().toISOString()
+            date: new Date().toISOString(),
           };
 
           this.userService.addGrade(newGrade).subscribe({
@@ -226,6 +231,7 @@ export class TeacherComponent implements OnInit {
   if (!gradesInput || gradesInput.trim() === '') {
     console.warn('Grades values are required.');
     return;
+    
   }
   
   // Parse comma-separated grades
@@ -244,7 +250,8 @@ export class TeacherComponent implements OnInit {
   // Create grades array for API
   const grades = gradeValues.map(value => ({
     value: parseInt(value),
-    date: new Date().toISOString()
+    date: new Date().toISOString(),
+    assignments: this.multipleGradeDescriptions[studentId]
   }));
   
   // Call the service method
@@ -270,6 +277,7 @@ export class TeacherComponent implements OnInit {
       // Reset inputs
       this.multipleGradesValues[studentId] = '';
       this.multipleGradesMode[studentId] = false;
+      this.multipleGradeDescriptions[studentId] = '';
     },
     error: (error) => {
       console.error('Error adding multiple grades:', error);
@@ -360,7 +368,7 @@ toggleMultipleGradesMode(studentId: number): void {
     grade.isEditing = true;
     grade.editValue = grade.value;
     grade.editDate = grade.date ? new Date(grade.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
-    grade.editAssignmentName = grade.assignmentName || '';
+    grade.editAssignmentName = grade.assignments;
   }
 
   bulkDelete(): void {
@@ -400,6 +408,7 @@ toggleMultipleGradesMode(studentId: number): void {
     grade.isEditing = false;
     grade.editValue = undefined;
     grade.editDate = undefined;
+    grade.editAssignmentName = '';
   }
 
 
