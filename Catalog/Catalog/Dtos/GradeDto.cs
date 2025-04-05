@@ -4,6 +4,8 @@
     {
         public double Value { get; set; }
         public DateTime Date { get; set; }
+
+        public string? Assignments { get; set; }
     }
 
     public class MultipleGradesRequest

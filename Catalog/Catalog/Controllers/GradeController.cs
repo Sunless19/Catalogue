@@ -46,7 +46,13 @@ namespace Catalog.Controllers
             try
             {
                 var grade = await _gradeService.AddGradeAsync(
-                    request.TeacherId, request.StudentId, request.ClassId, request.Value, request.Date);
+                    request.TeacherId,
+                    request.StudentId,
+                    request.ClassId,
+                    request.Value,
+                    request.Date,
+                    request.Assignments
+                );
 
                 return Ok(new { Message = "Grade added successfully", Grade = grade });
             }
@@ -121,6 +127,7 @@ namespace Catalog.Controllers
         public int ClassId { get; set; }
         public double Value { get; set; }
         public DateTime Date { get; set; }
+        public string? Assignments { get; set; }
     }
 
     public class UpdateGradeRequest
