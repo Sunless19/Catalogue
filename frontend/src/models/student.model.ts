@@ -1,4 +1,4 @@
-import { Grade } from '../models/grade.model';
+import { Grade } from '@models/grade.model';
 
 export interface Student {
   name: string;

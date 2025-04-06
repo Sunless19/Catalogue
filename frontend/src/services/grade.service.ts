@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+
+import { Grade } from '@models/grade.model';
+import { UserService } from '@services/user.service';
+
 import { Observable } from 'rxjs';
-import { Grade } from '../models/grade.model';
-import { UserService } from './user.service';
 
 @Injectable({ providedIn: 'root' })
 export class GradeService {

@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
-import { UserRole } from '../models/userRole.model';
+
+import { UserRole } from '@models/userRole.model';
+import { JwtPayload } from '@models/jwtPayload.model';
+
 import { jwtDecode } from 'jwt-decode';
-import { JwtPayload } from '../models/jwtPayload.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {

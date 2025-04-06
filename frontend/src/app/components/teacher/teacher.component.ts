@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../services/user.service';
-import { ClassService } from '../../services/class.service';
-import { GradeService } from '../../services/grade.service';
 import { FormsModule } from '@angular/forms';
-import { Student } from '../../models/student.model';
-import { Grade } from '../../models/grade.model';
-import { Class } from '../../models/class.model';
 
+import { UserService } from '@services/user.service';
+import { ClassService } from '@services/class.service';
+import { GradeService } from '@services/grade.service';
+
+import { Student } from '@models/student.model';
+import { Grade } from '@models/grade.model';
+import { Class } from '@models/class.model';
 
 @Component({
   selector: 'app-teacher',

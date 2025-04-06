@@ -1,7 +1,8 @@
   import { Component, OnInit } from '@angular/core';
-  import { UserService } from '../../services/user.service';
-  import { ClassService } from '../../services/class.service';
   import { CommonModule } from '@angular/common';
+
+  import { UserService } from '@services/user.service';
+  import { ClassService } from '@services/class.service';
 
   @Component({
     selector: 'app-student',

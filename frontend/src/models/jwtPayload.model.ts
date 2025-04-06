@@ -1,4 +1,4 @@
-import { UserRole } from './userRole.model';
+import { UserRole } from '@models/userRole.model';
 
 export interface JwtPayload {
     nameid: string;

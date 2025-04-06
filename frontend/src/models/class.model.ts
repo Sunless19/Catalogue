@@ -1,4 +1,4 @@
-import { Student } from '../models/student.model';
+import { Student } from '@models/student.model';
 
 export interface Class {
   name: string;
