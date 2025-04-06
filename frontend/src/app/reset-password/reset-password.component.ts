@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserService } from '../../services/apiService';
+import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -18,7 +18,7 @@ export class ResetPasswordComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private userService: UserService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -32,7 +32,7 @@ export class ResetPasswordComponent implements OnInit {
       return;
     }
 
-    this.userService.confirmPasswordReset(this.encodedId, this.newPassword).subscribe({
+    this.authService.confirmPasswordReset(this.encodedId, this.newPassword).subscribe({
       next: (res) =>{ 
           alert('Password has been successfully reset!');
           this.router.navigate(['/login']);

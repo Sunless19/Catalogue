@@ -1,42 +1,12 @@
-
-export interface Grade {
-  teacherId: number | null;
-  value: string | number;
-  studentName: string;
-  className: string;
-  assignmentName?: string;
-  classId?: number;
-  studentId: number;
-  date?: string;
-  isEditing?: boolean;
-  editValue?: string | number;
-  editDate?: string;
-  id: number;
-  assignments?: string;
-  editAssignmentName?: string;
-}
-
-export interface Student {
-  name: string;
-  grades: Grade[];
-  studentId: number;
-}
-export interface Class {
-  name: string;
-  students: Student[];
-  expanded: boolean;
-  showInput?: boolean;
-  newStudentName?: string;
-  userId: number;
-  classId: number;
-  inputMode: string;
-}
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
 import { ClassService } from '../../services/class.service';
 import { GradeService } from '../../services/grade.service';
 import { FormsModule } from '@angular/forms';
+import { Student } from '../../models/student.model';
+import { Grade } from '../../models/grade.model';
+import { Class } from '../../models/class.model';
 
 
 @Component({
