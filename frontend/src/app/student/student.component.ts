@@ -1,5 +1,6 @@
   import { Component, OnInit } from '@angular/core';
-  import { UserService } from '../../services/apiService';
+  import { UserService } from '../../services/user.service';
+  import { ClassService } from '../../services/class.service';
   import { CommonModule } from '@angular/common';
 
   @Component({
@@ -14,11 +15,11 @@
     isLoading = true;
     errorMessage: string = '';
 
-    constructor(private userService: UserService) {}
+    constructor(private userService: UserService, private classService: ClassService) {}
 
     ngOnInit(): void {
       const studentId = this.userService.getTeacherId();
-      this.userService.getStudentClassesAndGrades(studentId).subscribe({
+      this.classService.getStudentClassesAndGrades(studentId).subscribe({
         next: (data) => {
           this.studentClasses = data.map(subject => ({
             ...subject,

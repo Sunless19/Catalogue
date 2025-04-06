@@ -33,7 +33,9 @@ export interface Class {
 }
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../services/apiService';
+import { UserService } from '../../services/user.service';
+import { ClassService } from '../../services/class.service';
+import { GradeService } from '../../services/grade.service';
 import { FormsModule } from '@angular/forms';
 
 
@@ -68,7 +70,7 @@ export class TeacherComponent implements OnInit {
   gradeDescriptions: { [studentId: number]: string } = {};
   isAddingMultipleDescription: { [studentId: number]: boolean } = {};
   multipleGradeDescriptions: { [studentId: number]: string } = {};
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private classService: ClassService, private gradeService: GradeService) {}
   
 
 
@@ -137,7 +139,7 @@ export class TeacherComponent implements OnInit {
             assignments: this.bulkGradeDescription
           };
     
-          this.userService.addGrade(newGrade).subscribe({
+          this.gradeService.addGrade(newGrade).subscribe({
             next: (response: any) => {
               student.grades.push(response.grade);
               successfulAdds++;
@@ -189,7 +191,7 @@ export class TeacherComponent implements OnInit {
 
     this.isLoadingClasses = true;
     this.errorMessage = null;
-    this.userService.getClasses().subscribe({
+    this.classService.getClasses().subscribe({
       next: (data) => {
         console.log('Raw classes data:', data);
         this.classes = data.map((classItem: any): Class => ({
@@ -232,7 +234,7 @@ export class TeacherComponent implements OnInit {
       date: new Date().toISOString()
     };
 
-    this.userService.addGrade(newGrade).subscribe({
+    this.gradeService.addGrade(newGrade).subscribe({
       next: (response: any) => {
         console.log('Grade added successfully:', response);
 
@@ -287,7 +289,7 @@ export class TeacherComponent implements OnInit {
   }));
   
   // Call the service method
-  this.userService.addMultipleGrades(this.teacherId, studentId, classId, grades).subscribe({
+  this.gradeService.addMultipleGrades(this.teacherId, studentId, classId, grades).subscribe({
     next: (response: any) => {
       console.log('Multiple grades added successfully:', response);
       
@@ -337,7 +339,7 @@ toggleMultipleGradesMode(studentId: number): void {
     }
 
     this.isLoadingGrades = true;
-    this.userService.getGradesByTeacher(this.teacherId).subscribe({
+    this.gradeService.getGradesByTeacher(this.teacherId).subscribe({
       next: (gradesData) => {
         console.log('Fetched grades data:', gradesData);
         this.processGrades(gradesData);
@@ -466,7 +468,7 @@ toggleMultipleGradesMode(studentId: number): void {
 
     console.log('Updating grade:', grade.id, updatePayload);
 
-    this.userService.updateGrade(grade.id, updatePayload).subscribe({
+    this.gradeService.updateGrade(grade.id, updatePayload).subscribe({
       next: (res: any) => {
         console.log('Grade updated successfully:', res.grade);
 
@@ -507,7 +509,7 @@ toggleMultipleGradesMode(studentId: number): void {
 
     if (!confirm('Are you sure you want to delete this grade?')) return;
 
-    this.userService.deleteGrade(grade.id).subscribe({
+    this.gradeService.deleteGrade(grade.id).subscribe({
       next: () => {
         console.log('Grade deleted successfully');
 
@@ -542,7 +544,7 @@ toggleMultipleGradesMode(studentId: number): void {
       return;
     }
 
-    this.userService.addStudentToClass(classId, studentName).subscribe({
+    this.classService.addStudentToClass(classId, studentName).subscribe({
       next: (response) => {
         console.log(`Student added successfully via API: ${studentName}`, response);
 
@@ -582,7 +584,7 @@ toggleMultipleGradesMode(studentId: number): void {
 
     const classId = this.classes[classIndex].classId;
 
-    this.userService.deleteStudent(classId, student.studentId).subscribe({
+    this.classService.deleteStudent(classId, student.studentId).subscribe({
       next: () => {
         console.log(`Student ${student.studentId} deleted from class ${classId}`);
         this.classes[classIndex].students = this.classes[classIndex].students.filter(s => s.studentId !== student.studentId);
@@ -620,7 +622,7 @@ toggleMultipleGradesMode(studentId: number): void {
         date: new Date().toISOString()
       };
   
-      this.userService.addGrade(newGrade).subscribe({
+      this.gradeService.addGrade(newGrade).subscribe({
         next: (response: any) => {
           console.log('Grade added successfully:', response);
   

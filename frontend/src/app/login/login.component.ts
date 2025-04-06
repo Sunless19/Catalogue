@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserService } from '../../services/apiService';
+import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -15,7 +16,7 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(private userService: UserService, private authService: AuthService, private router: Router) {}
 
   goToRgister()
   {
@@ -28,7 +29,7 @@ export class LoginComponent {
 
   onLogin() {
 
-    this.userService.login(this.username, this.password).subscribe({
+    this.authService.login(this.username, this.password).subscribe({
       next: (response: any) =>{
         const token = response.token;
         console.log('RESPONSE:', token);
