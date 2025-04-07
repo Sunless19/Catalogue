@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "AllowOrigin";
-var mySqlConnectionString = "server=localhost;port=3306;database=MyAppDb;user=myuser;password=mypass";
+
 
 // Add services to the container.
 
@@ -75,10 +75,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     });
 
-builder.Services.AddDbContext<ApplicationDBContext>(options =>
-    options.UseMySql(
-        mySqlConnectionString,
-        new MySqlServerVersion(new Version(8, 0, 34))));
+
 
 
 
