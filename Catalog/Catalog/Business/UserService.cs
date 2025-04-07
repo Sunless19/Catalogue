@@ -7,7 +7,7 @@ using Catalog.Repositories;
 using System.Net.Mail;
 using System.Net;
 
-public class UserService
+public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly string _jwtKey;
@@ -26,7 +26,7 @@ public class UserService
 
         if (existingUserByName != null || existingUserByEmail != null)
         {
-            return false; 
+            return false;
         }
 
         _userRepository.Add(user);
@@ -110,7 +110,7 @@ public class UserService
         {
             var fromAddress = new MailAddress("andreeaangelescu011@gmail.com", "Catalogue");
             var toAddress = new MailAddress(toEmail);
-            const string fromPassword = "gtijsbwygsfexkpb"; 
+            const string fromPassword = "gtijsbwygsfexkpb";
             const string subject = "Reset Your Password";
             string body = $"Click the link below to reset your password:\n{resetLink}";
 

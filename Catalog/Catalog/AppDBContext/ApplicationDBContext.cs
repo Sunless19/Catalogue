@@ -14,14 +14,11 @@ namespace Catalog.AppDBContext
         public DbSet<StudentClass> StudentClasses { get; set; }
         public DbSet<Grade> Grades { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
+    : base(options)
         {
-            var connectionString = "server=localhost;port=3306;database=MyAppDb;user=myuser;password=mypass";
-
-            optionsBuilder.UseMySql(connectionString,
-                new MySqlServerVersion(new Version(8, 0, 34)));
-
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configure TPH (Table Per Hierarchy) inheritance

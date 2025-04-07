@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Catalog.Services
 {
-    public class GradeService
+    public class GradeService : IGradeService
     {
         private readonly IGradeRepository _gradeRepository;
 

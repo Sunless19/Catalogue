@@ -11,9 +11,9 @@ namespace Catalog.Controllers
     [ApiController]
     public class GradeController : ControllerBase
     {
-        private readonly GradeService _gradeService;
+        private readonly IGradeService _gradeService;
 
-        public GradeController(GradeService gradeService)
+        public GradeController(IGradeService gradeService)
         {
             _gradeService = gradeService;
         }

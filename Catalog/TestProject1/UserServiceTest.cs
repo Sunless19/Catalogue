@@ -13,7 +13,6 @@ namespace Catalog.Tests.Services
     {
         private Mock<IUserRepository> _userRepositoryMock;
         private IConfiguration _configuration;
-        private Mock<IConfiguration> _configurationMock;
         private UserService _userService;
 
         [SetUp]
@@ -21,18 +20,17 @@ namespace Catalog.Tests.Services
         {
             _userRepositoryMock = new Mock<IUserRepository>();
 
+            
             var inMemorySettings = new Dictionary<string, string>
             {
-                { "Jwt:Key", "super_secret_jwt_key_123" }
+                { "Jwt:Key", "ThisIsA32CharacterLongJwtKey123456" }
             };
 
             _configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(inMemorySettings!)
                 .Build();
 
-            _configurationMock.Setup(c => c["Jwt:Key"]).Returns("ThisIsASecureJwtTestKey123!");
-
-                _userService = new UserService(_userRepositoryMock.Object, _configuration);
+            _userService = new UserService(_userRepositoryMock.Object, _configuration);
 
         }
 
