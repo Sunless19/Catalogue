@@ -135,7 +135,7 @@ public class UserService
         }
         catch (Exception ex)
         {
-            Console.WriteLine("❌ Failed to send email: " + ex.Message);
+            Console.WriteLine("Failed to send email: " + ex.Message);
             Console.WriteLine("StackTrace: " + ex.StackTrace);
         }
     }

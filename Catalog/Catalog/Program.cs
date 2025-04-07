@@ -61,6 +61,7 @@ builder.Services.AddDbContext<ApplicationDBContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
+builder.Services.AddScoped<IGradeRepository, GradeRepository>();
 builder.Services.AddScoped<ClassService>();
 builder.Services.AddScoped<GradeService>();
 
