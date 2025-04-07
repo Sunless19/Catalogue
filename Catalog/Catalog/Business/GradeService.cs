@@ -28,7 +28,6 @@ namespace Catalog.Services
             {
                 Value = g.Value,
                 Date = g.Date,
-                Assignments = g.Assignments,
                 StudentId = studentId,
                 ClassId = classId,
                 TeacherId = teacherId
@@ -46,7 +45,6 @@ namespace Catalog.Services
                 StudentId = studentId,
                 ClassId = classId,
                 TeacherId = teacherId,
-                Assignments = assignments
             };
 
             return await _gradeRepository.AddGradeAsync(grade);
@@ -60,7 +58,6 @@ namespace Catalog.Services
 
             grade.Value = value;
             grade.Date = date;
-            grade.Assignments = assignments;
 
             await _gradeRepository.SaveAsync();
             return grade;

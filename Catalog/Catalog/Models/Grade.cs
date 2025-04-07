@@ -33,6 +33,5 @@ namespace Catalog.Models
         public int TeacherId { get; set; }
         [ForeignKey("TeacherId")]
         public Teacher Teacher { get; set; }
-        public string? Assignments { get; set; }
     }
 }
