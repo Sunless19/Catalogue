@@ -1,17 +1,24 @@
-import { TestBed } from '@angular/core/testing';
-import { CanActivateFn } from '@angular/router';
+import { CanActivateFn, ActivatedRouteSnapshot } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 
-import { roleGuard } from './role.guard';
+export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
+  const router = inject(Router);
+  const token = localStorage.getItem('token');
 
-describe('roleGuard', () => {
-  const executeGuard: CanActivateFn = (...guardParameters) => 
-      TestBed.runInInjectionContext(() => roleGuard(...guardParameters));
+  if (!token) {
+    router.navigate(['/login']);
+    return false;
+  }
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-  });
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  const userRole = payload['role'];
+  const expectedRole = route.data['role'];
 
-  it('should be created', () => {
-    expect(executeGuard).toBeTruthy();
-  });
-});
+  if (userRole === expectedRole) {
+    return true;
+  }
+
+  router.navigate(['/error']);
+  return false;
+};

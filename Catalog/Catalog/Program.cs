@@ -6,10 +6,13 @@ using Catalog.AppDBContext;
 using Catalog.Repositories;
 using Catalog.Repository;
 using Catalog.Services;
+using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "AllowOrigin";
+var mySqlConnectionString = "server=localhost;port=3306;database=MyAppDb;user=myuser;password=mypass";
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -59,10 +62,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<ApplicationDBContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
+builder.Services.AddScoped<IGradeRepository, GradeRepository>();
 builder.Services.AddScoped<ClassService>();
-builder.Services.AddScoped<GradeService>();
+builder.Services.AddScoped<IGradeService, GradeService>();
 
 
 builder.Services.AddControllers()
@@ -71,6 +75,10 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     });
 
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
+    options.UseMySql(
+        mySqlConnectionString,
+        new MySqlServerVersion(new Version(8, 0, 34))));
 
 
 

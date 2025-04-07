@@ -8,8 +8,8 @@ namespace Catalog.Controllers
     [Route("User")]
     public class UserController : ControllerBase
     {
-        private UserService _userService;
-        public UserController(UserService userService)
+        private IUserService _userService;
+        public UserController(IUserService userService)
         {
             _userService = userService;
         }

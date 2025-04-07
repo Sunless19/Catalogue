@@ -1,25 +1,25 @@
-﻿using Catalog.AppDBContext;
-using Catalog.Dtos;
+﻿using Catalog.Dtos;
 using Catalog.Models;
-using Microsoft.EntityFrameworkCore;
+using Catalog.Repositories;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Catalog.Services
 {
-    public class GradeService
+    public class GradeService : IGradeService
     {
-        private readonly ApplicationDBContext _context;
+        private readonly IGradeRepository _gradeRepository;
 
-        public GradeService(ApplicationDBContext context)
+        public GradeService(IGradeRepository gradeRepository)
         {
-            _context = context;
+            _gradeRepository = gradeRepository;
         }
+
         public async Task<List<Grade>> GetGradesByTeacherAsync(int teacherId)
         {
-            return await _context.Grades
-                .Where(g => g.TeacherId == teacherId)
-                .ToListAsync();
+            return await _gradeRepository.GetGradesByTeacherAsync(teacherId);
         }
 
         public async Task<List<Grade>> AddMultipleGradesAsync(int teacherId, int studentId, int classId, List<GradeEntry> grades)
@@ -34,10 +34,7 @@ namespace Catalog.Services
                 TeacherId = teacherId
             }).ToList();
 
-            _context.Grades.AddRange(newGrades);
-            await _context.SaveChangesAsync();
-
-            return newGrades;
+            return await _gradeRepository.AddGradesAsync(newGrades);
         }
 
         public async Task<Grade> AddGradeAsync(int teacherId, int studentId, int classId, double value, DateTime date, string? assignments)
@@ -52,36 +49,26 @@ namespace Catalog.Services
                 Assignments = assignments
             };
 
-            _context.Grades.Add(grade);
-            await _context.SaveChangesAsync();
-            return grade;
+            return await _gradeRepository.AddGradeAsync(grade);
         }
 
-        public async Task<Grade?> UpdateGradeAsync(int gradeId, double value, DateTime date, string assigmet)
+        public async Task<Grade?> UpdateGradeAsync(int gradeId, double value, DateTime date, string assignments)
         {
-            var grade = await _context.Grades.FindAsync(gradeId);
-
+            var grade = await _gradeRepository.GetGradeByIdAsync(gradeId);
             if (grade == null)
                 return null;
 
-            // Only modify Value and Date
             grade.Value = value;
             grade.Date = date;
-            grade.Assignments = assigmet;
+            grade.Assignments = assignments;
 
-            await _context.SaveChangesAsync();
+            await _gradeRepository.SaveAsync();
             return grade;
         }
 
         public async Task<bool> DeleteGradeAsync(int gradeId)
         {
-            var grade = await _context.Grades.FindAsync(gradeId);
-            if (grade == null)
-                return false;
-
-            _context.Grades.Remove(grade);
-            await _context.SaveChangesAsync();
-            return true;
+            return await _gradeRepository.DeleteGradeAsync(gradeId);
         }
     }
 }

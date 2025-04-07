@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { UserService } from '../../services/apiService';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -16,7 +17,7 @@ export class RegisterComponent {
   password: string = '';
   role: string = 'Student'; 
 
-  constructor(private userService: UserService) {}
+  constructor(private authService: AuthService) {}
 
   onRegister() {
     const payload = {
@@ -26,7 +27,7 @@ export class RegisterComponent {
       role: this.role
     };
 
-    this.userService.register(payload).subscribe({
+    this.authService.register(payload).subscribe({
       next: () => {
         console.log("User registered successfully!");
       },
