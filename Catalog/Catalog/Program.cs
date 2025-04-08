@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var MyAllowSpecificOrigins = "AllowOrigin";
 
 
@@ -60,7 +61,7 @@ builder.Services.AddCors(options =>
     );
 });
 
-builder.Services.AddDbContext<ApplicationDBContext>();
+//builder.Services.AddDbContext<ApplicationDBContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
@@ -94,6 +95,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 34))));
 
 
 var app = builder.Build();

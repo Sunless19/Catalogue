@@ -50,8 +50,7 @@ namespace Catalog.Controllers
                     request.StudentId,
                     request.ClassId,
                     request.Value,
-                    request.Date,
-                    request.Assignments
+                    request.Date
                 );
 
                 return Ok(new { Message = "Grade added successfully", Grade = grade });
@@ -70,7 +69,7 @@ namespace Catalog.Controllers
 
             try
             {
-                var updatedGrade = await _gradeService.UpdateGradeAsync(gradeId, request.Value, request.Date, request.Assignments);
+                var updatedGrade = await _gradeService.UpdateGradeAsync(gradeId, request.Value, request.Date);
 
                 if (updatedGrade == null)
                     return NotFound("Grade not found");

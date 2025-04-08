@@ -44,7 +44,6 @@ namespace Catalog.Tests.Controllers
                 ClassId = 3,
                 Value = 9,
                 Date = DateTime.Today,
-                Assignments = "Test 1"
             };
 
             _gradeServiceMock.Setup(s => s.AddGradeAsync(
@@ -52,8 +51,7 @@ namespace Catalog.Tests.Controllers
                 request.StudentId,
                 request.ClassId,
                 request.Value,
-                request.Date,
-                request.Assignments)).ReturnsAsync(mockGrade);
+                request.Date)).ReturnsAsync(mockGrade);
 
             var result = await _controller.AddGrade(request) as OkObjectResult;
 

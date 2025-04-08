@@ -36,7 +36,7 @@ namespace Catalog.Services
             return await _gradeRepository.AddGradesAsync(newGrades);
         }
 
-        public async Task<Grade> AddGradeAsync(int teacherId, int studentId, int classId, double value, DateTime date, string? assignments)
+        public async Task<Grade> AddGradeAsync(int teacherId, int studentId, int classId, double value, DateTime date)
         {
             var grade = new Grade
             {
@@ -50,7 +50,7 @@ namespace Catalog.Services
             return await _gradeRepository.AddGradeAsync(grade);
         }
 
-        public async Task<Grade?> UpdateGradeAsync(int gradeId, double value, DateTime date, string assignments)
+        public async Task<Grade?> UpdateGradeAsync(int gradeId, double value, DateTime date)
         {
             var grade = await _gradeRepository.GetGradeByIdAsync(gradeId);
             if (grade == null)

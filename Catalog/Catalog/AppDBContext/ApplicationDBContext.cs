@@ -7,6 +7,12 @@ namespace Catalog.AppDBContext
 {
     public class ApplicationDBContext : DbContext
     {
+        public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
+    : base(options)
+        {
+        }
+
+
         public DbSet<Teacher> Teacher { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Student> Students { get; set; }
@@ -14,14 +20,14 @@ namespace Catalog.AppDBContext
         public DbSet<StudentClass> StudentClasses { get; set; }
         public DbSet<Grade> Grades { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var connectionString = "server=localhost;port=3306;database=MyAppDb;user=myuser;password=mypass";
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    var connectionString = "server=localhost;port=3306;database=MyAppDb;user=myuser;password=mypass";
 
-            optionsBuilder.UseMySql(connectionString,
-                new MySqlServerVersion(new Version(8, 0, 34)));
+        //    optionsBuilder.UseMySql(connectionString,
+        //        new MySqlServerVersion(new Version(8, 0, 34)));
 
-        }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
