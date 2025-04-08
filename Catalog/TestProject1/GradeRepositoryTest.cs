@@ -26,9 +26,9 @@ namespace Catalog.Tests.Repositories
 
             // Seed data
             _context.Grades.AddRange(
-                new Grade { Id = 1, StudentId = 1, TeacherId = 10, ClassId = 100, Value = 8, Assignments = "Math Test" },
-                new Grade { Id = 2, StudentId = 2, TeacherId = 10, ClassId = 101, Value = 9, Assignments = "Science Project" },
-                new Grade { Id = 3, StudentId = 1, TeacherId = 11, ClassId = 102, Value = 10, Assignments = "Essay" }
+                new Grade { Id = 1, StudentId = 1, TeacherId = 10, ClassId = 100, Value = 8 },
+                new Grade { Id = 2, StudentId = 2, TeacherId = 10, ClassId = 101, Value = 9 },
+                new Grade { Id = 3, StudentId = 1, TeacherId = 11, ClassId = 102, Value = 10}
             );
             _context.SaveChanges();
 
@@ -60,7 +60,6 @@ namespace Catalog.Tests.Repositories
                 TeacherId = 12,
                 ClassId = 103,
                 Value = 7,
-                Assignments = "Final Exam"
             };
 
             var result = await _repository.AddGradeAsync(newGrade);
@@ -77,8 +76,8 @@ namespace Catalog.Tests.Repositories
         {
             var newGrades = new List<Grade>
             {
-                new Grade { StudentId = 4, TeacherId = 13, ClassId = 104, Value = 6, Assignments = "Quiz" },
-                new Grade { StudentId = 5, TeacherId = 13, ClassId = 104, Value = 9, Assignments = "Presentation" }
+                new Grade { StudentId = 4, TeacherId = 13, ClassId = 104, Value = 6 },
+                new Grade { StudentId = 5, TeacherId = 13, ClassId = 104, Value = 9 }
             };
 
             var result = await _repository.AddGradesAsync(newGrades);
@@ -93,7 +92,6 @@ namespace Catalog.Tests.Repositories
             var result = await _repository.GetGradeByIdAsync(1);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("Math Test", result!.Assignments);
         }
 
         [Test]

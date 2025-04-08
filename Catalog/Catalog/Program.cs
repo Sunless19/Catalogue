@@ -10,8 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var MyAllowSpecificOrigins = "AllowOrigin";
-var mySqlConnectionString = "server=localhost;port=3306;database=MyAppDb;user=myuser;password=mypass";
+
 
 // Add services to the container.
 
@@ -60,7 +61,7 @@ builder.Services.AddCors(options =>
     );
 });
 
-builder.Services.AddDbContext<ApplicationDBContext>();
+//builder.Services.AddDbContext<ApplicationDBContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
@@ -75,10 +76,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     });
 
-builder.Services.AddDbContext<ApplicationDBContext>(options =>
-    options.UseMySql(
-        mySqlConnectionString,
-        new MySqlServerVersion(new Version(8, 0, 34))));
+
 
 
 
@@ -97,6 +95,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 34))));
 
 
 var app = builder.Build();

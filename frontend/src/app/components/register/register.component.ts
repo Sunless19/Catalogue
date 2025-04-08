@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '@services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -17,7 +18,10 @@ export class RegisterComponent {
   password: string = '';
   role: string = 'Student'; 
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+   ) {}
 
   onRegister() {
     const payload = {
@@ -29,6 +33,7 @@ export class RegisterComponent {
 
     this.authService.register(payload).subscribe({
       next: () => {
+        this.router.navigate(['/login']);
         console.log("User registered successfully!");
       },
       error: (err) => {

@@ -52,14 +52,14 @@ namespace Catalog.Tests.Services
             int teacherId = 1, studentId = 2, classId = 3;
             var gradeEntries = new List<GradeEntry>
             {
-                new GradeEntry { Value = 10, Date = DateTime.Now, Assignments = "Tema 1" },
-                new GradeEntry { Value = 9, Date = DateTime.Now, Assignments = "Tema 2" }
+                new GradeEntry { Value = 10, Date = DateTime.Now},
+                new GradeEntry { Value = 9, Date = DateTime.Now }
             };
 
             var expectedGrades = new List<Grade>
             {
-                new Grade { Value = 10, StudentId = studentId, ClassId = classId, TeacherId = teacherId, Assignments = "Tema 1" },
-                new Grade { Value = 9, StudentId = studentId, ClassId = classId, TeacherId = teacherId, Assignments = "Tema 2" }
+                new Grade { Value = 10, StudentId = studentId, ClassId = classId, TeacherId = teacherId },
+                new Grade { Value = 9, StudentId = studentId, ClassId = classId, TeacherId = teacherId}
             };
 
             _gradeRepositoryMock.Setup(repo => repo.AddGradesAsync(It.IsAny<List<Grade>>()))
@@ -89,20 +89,18 @@ namespace Catalog.Tests.Services
                 Date = date,
                 StudentId = studentId,
                 ClassId = classId,
-                TeacherId = teacherId,
-                Assignments = assignments
+                TeacherId = teacherId
             };
 
             _gradeRepositoryMock.Setup(repo => repo.AddGradeAsync(It.IsAny<Grade>()))
                                 .ReturnsAsync(expectedGrade);
 
             // Act
-            var result = await _gradeService.AddGradeAsync(teacherId, studentId, classId, value, date, assignments);
+            var result = await _gradeService.AddGradeAsync(teacherId, studentId, classId, value, date);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(value, result.Value);
-            Assert.AreEqual(assignments, result.Assignments);
             _gradeRepositoryMock.Verify(repo => repo.AddGradeAsync(It.IsAny<Grade>()), Times.Once);
         }
 
@@ -113,19 +111,17 @@ namespace Catalog.Tests.Services
             int gradeId = 1;
             double newValue = 9;
             DateTime newDate = DateTime.Today;
-            string newAssignments = "Actualizare";
 
             var existingGrade = new Grade { Id = gradeId, Value = 8 };
             _gradeRepositoryMock.Setup(repo => repo.GetGradeByIdAsync(gradeId))
                                 .ReturnsAsync(existingGrade);
 
             // Act
-            var result = await _gradeService.UpdateGradeAsync(gradeId, newValue, newDate, newAssignments);
+            var result = await _gradeService.UpdateGradeAsync(gradeId, newValue, newDate);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(newValue, result.Value);
-            Assert.AreEqual(newAssignments, result.Assignments);
             _gradeRepositoryMock.Verify(repo => repo.SaveAsync(), Times.Once);
         }
 
@@ -138,7 +134,7 @@ namespace Catalog.Tests.Services
                                 .ReturnsAsync((Grade)null);
 
             // Act
-            var result = await _gradeService.UpdateGradeAsync(gradeId, 9, DateTime.Today, "Test");
+            var result = await _gradeService.UpdateGradeAsync(gradeId, 9, DateTime.Today);
 
             // Assert
             Assert.IsNull(result);
